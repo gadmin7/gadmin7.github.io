@@ -1,0 +1,95 @@
+/* Basic Reset and Font Setting */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Times New Roman', serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header with Back to Home Link */
+header {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #333;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 1px 0;
+    font-size: 2.5em;
+}
+
+nav {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.home-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+.home-link:hover {
+    color: #ddd;
+}
+
+/* Projects Container */
+.projects-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    justify-items: center;
+}
+
+.project-box {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s;
+    text-align: left;
+}
+
+.project-box:hover {
+    transform: translateY(-5px);
+}
+
+.project-box h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.project-description {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.project-links {
+    display: flex;
+    gap: 10px;
+}
+
+.project-links a {
+    text-decoration: none;
+    color: #0066cc;
+    font-size: 1em;
+    transition: color 0.3s;
+}
+
+.project-links a:hover {
+    color: #004999;
+}

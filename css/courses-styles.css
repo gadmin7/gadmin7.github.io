@@ -1,0 +1,91 @@
+/* Basic Reset and Font Setting */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Times New Roman', serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header with Back to Home Link */
+header {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #333;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 1px 0;
+    font-size: 2.5em;
+}
+
+nav {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.home-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+.home-link:hover {
+    color: #ddd;
+}
+
+/* Courses Container */
+.courses-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    justify-items: center;
+}
+
+.course-box {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s;
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+}
+
+.course-box:hover {
+    transform: translateY(-10px);
+}
+
+.course-box img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.course-details {
+    padding: 15px;
+}
+
+.course-details h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.course-details p {
+    margin: 5px 0;
+    color: #777;
+    font-size: 1em;
+}

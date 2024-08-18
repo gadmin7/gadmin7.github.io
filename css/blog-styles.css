@@ -1,0 +1,91 @@
+/* Basic Reset and Font Setting */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Times New Roman', serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header with Back to Home Link */
+header {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #333;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 1px 0;
+    font-size: 2.5em;
+}
+
+nav {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.home-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+.home-link:hover {
+    color: #ddd;
+}
+
+.blog-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.blogs-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+
+.blog-box {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    transition: transform 0.3s;
+    text-align: left;
+}
+
+.blog-box:hover {
+    transform: translateY(-10px);
+}
+
+.blog-box a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 20px;
+}
+
+.blog-box .blog-title {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.blog-box .blog-meta {
+    font-size: 1em;
+    color: #777;
+}
+
+.blog-box .blog-date,
+.blog-box .blog-source {
+    margin-bottom: 5px;
+}
