@@ -118,17 +118,26 @@
     </figure>
 
     <p>Because vectors share a common global bias direction, cosine similarity becomes less discriminative—it measures small angular deviations rather than large semantic ones. However, as Mimno & Thompson note, SGNS still performs well on many tasks despite this anisotropy. The geometry is thus <em>distorted but functional</em>, not “broken.”</p>
+    <h3>Why Geometry Matters</h3>
+    <p>The geometry of an embedding space directly determines how similarity, clustering, and analogy operations behave. 
+       In an isotropic space, cosine similarity captures meaningful relational differences because vectors are spread evenly across directions. 
+       In an anisotropic or narrow-cone space, many vectors share similar orientations, making pairwise cosine similarities artificially high even for unrelated words. 
+       This can blur semantic distinctions, hurt interpretability, and make downstream classifiers or nearest-neighbor retrieval less sensitive to genuine differences in meaning.</p>
+
+    <p>Researchers have found that post-processing steps like removing top principal components or whitening the space 
+       (<a href="https://arxiv.org/pdf/1702.01417" target="_blank">Mu & Viswanath, 2018</a>) can partially restore isotropy and improve performance on similarity and analogy benchmarks. 
+       This shows that <strong>geometry isn’t just cosmetic it encodes how meaning is organized and compared</strong> in the model’s latent space.</p>
 
     <div class="disclaimer">
       These geometric effects are empirical and depend on training hyperparameters (e.g., negative sample ratio). Read the original paper for experimental details and assumptions.
     </div>
   </section>
 
+  <hr> 
   <section id="bridge">
-    <p>This suggests the optimization objective might be encouraging an easier-to-satisfy configuration than the one we intended. This geometric distortion raises deeper questions: Why does an efficient optimization trick yield such a skewed representation—and what does that say about how AI systems pursue proxy goals?</p>
+    <p>The geometry is thus <em>distorted but functional</em>, not “broken” suggests the optimization objective might be encouraging an easier-to-satisfy configuration than the one we intended. This geometric distortion raises deeper questions: Why does an efficient optimization trick yield such a skewed representation—and what does that say about how AI systems pursue proxy goals?</p>
   </section>
 
-  <hr>
 
   <!-- PART III -->
   <section id="part-3">
