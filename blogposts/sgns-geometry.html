@@ -113,8 +113,11 @@
     </ul>
 
     <figure style="text-align: center; margin: 20px 0;">
-      <img src="../images/SGNS_geometry.jpg" alt="SGNS Geometry" class="blog-image">
-      <figcaption>Figure 2: The narrow cone phenomenon (Mimno & Thompson, 2017).</figcaption>
+      <img src="../images/sgns_pca.png" alt="SGNS Geometry" class="blog-image">
+      <figcaption>Figure 2: SGNS word vectors and their context vectors
+        projected using PCA (left) and t-SNE (right). t-SNE provides
+        a more readable layout, but masks the divergence between
+        word and context vectors. (Mimno & Thompson, 2017).</figcaption>
     </figure>
 
     <p>Because vectors share a common global bias direction, cosine similarity becomes less discriminative—it measures small angular deviations rather than large semantic ones. However, as Mimno & Thompson note, SGNS still performs well on many tasks despite this anisotropy. The geometry is thus <em>distorted but functional</em>, not “broken.”</p>
