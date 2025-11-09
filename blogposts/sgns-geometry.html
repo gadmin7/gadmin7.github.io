@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Billion-Word Hack: How Word2Vec’s Speed Secret Created a Hidden Geometric Flaw</title>
+  <title>The Billion-Word Hack: How Word2Vec’s Speed Secret Shaped Its Geometry</title>
   <link rel="stylesheet" href="../css/styles.css">
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; max-width: 900px; padding: 20px; }
@@ -25,6 +25,15 @@
       margin: 20px 0;
       font-size: 0.95em;
     }
+    .disclaimer {
+      font-style: italic;
+      font-size: 0.9em;
+      color: #555;
+      background: #fff8e1;
+      border-left: 4px solid #f1c40f;
+      padding: 10px 15px;
+      margin: 15px 0;
+    }
   </style>
 </head>
 
@@ -37,7 +46,7 @@
 </header>
 
 <article>
-  <h1>The Billion-Word Hack: How Word2Vec’s Speed Secret Created an Unexpected Geometric Bias</h1>
+  <h1>The Billion-Word Hack: How Word2Vec’s Speed Secret Shaped Its Geometry</h1>
   <p style="color: #666; font-style: italic;">Published: November 9, 2025 </p>
   <hr>
 
@@ -66,7 +75,7 @@
       $$p(w_O|w_I) = \frac{\exp((v'_{w_O})^\top v_{w_I})} {\sum_{w=1}^{|V|} \exp((v'_w)^\top v_{w_I})} \tag{2}$$
     </div>
     <p>Here, $v_w$ and $v'_w$ are the “input” and “output” vector representations of $w$, and $|V|$ is the vocabulary size.
-        We will later use only $v_w$ for downstream tasks</p>
+        We will later use only $v_w$ for downstream tasks.</p>
 
     <h3>The Bottleneck: The Softmax Tsunami</h3>
     <p>Computing this softmax denominator scales with vocabulary size ($|V|$ often 10⁵–10⁷), leading to billions of multiplications per update. Training with the full softmax on billion-word corpora was expensive.</p>
@@ -76,7 +85,7 @@
     <div class="math-block">
       $$L = \log \sigma({v'_{w_O}}^\top v_{w_I}) + \sum_{i=1}^{K} \mathbb{E}_{w_i \sim P_n(w)} \left[ \log \sigma(-{v'_{w_i}}^\top v_{w_I}) \right] \tag{3}$$
     </div>
-    <p>Here, negative samples $w_i$ are drawn from a noise distribution $P_n(w)$ (typically $U(w)^{3/4}$). This trick reduced per-update complexity from $O(|V|)$ to $O(K)$ a breakthrough for scalability.</p>
+    <p>Here, negative samples $w_i$ are drawn from a noise distribution $P_n(w)$ (typically $U(w)^{3/4}$). This trick reduced per-update complexity from $O(|V|)$ to $O(K)$—a breakthrough for scalability.</p>
 
     <h3>The Binary Decision Layer: Two Sets of Vectors</h3>
     <p>SGNS learns two distinct embedding matrices: <strong>input vectors $v_w$</strong> (words as predictors) and <strong>output vectors $v'_w$</strong> (words as predicted contexts). Most downstream tasks use the input embeddings $v_w$.</p>
@@ -86,8 +95,8 @@
 
   <!-- PART II -->
   <section id="part-2">
-    <h2>📐 Part II: The Unintended Consequence “The Narrow Cone”</h2>
-    <p>In 2017, <a href="https://aclanthology.org/D17-1308/" target="_blank">Mimno & Thompson</a> revealed a geometric anomaly: SGNS embeddings occupy a <strong>narrow cone</strong> in space rather than an isotropic (uniform) distribution.</p>
+    <h2>📐 Part II: The Unintended Consequence — “The Narrow Cone”</h2>
+    <p>In 2017, <a href="https://aclanthology.org/D17-1308/" target="_blank">Mimno & Thompson</a> revealed a geometric anomaly: SGNS embeddings often occupy a <strong>narrow cone</strong> in space rather than an isotropic (uniform) distribution.</p>
 
     <div class="definition-box">
       <strong>Terminology:</strong><br>
@@ -96,59 +105,63 @@
       • <em>Narrow cone</em> – most vectors share a similar direction, reducing angular diversity.
     </div>
 
-    <h3>In the Strange Geometry paper they found: </h3>
+    <h3>In the Strange Geometry paper they found:</h3>
     <ul>
       <li>Word vectors align along a dominant axis, forming a narrow cone.</li>
       <li>Most input vectors are non-negative in many dimensions.</li>
       <li>Context vectors tend to point in the opposite direction.</li>
     </ul>
+
     <figure style="text-align: center; margin: 20px 0;">
       <img src="../images/SGNS_geometry.jpg" alt="SGNS Geometry" class="blog-image">
       <figcaption>Figure 2: The narrow cone phenomenon (Mimno & Thompson, 2017).</figcaption>
     </figure>
 
-    <h3>The Cost to Cosine Similarity</h3>
-    <p>Because vectors share a common global bias direction, cosine similarity becomes less discriminative it measures small angular deviations rather than true semantic distance. However, as Mimno & Thompson note, SGNS still performs well on many tasks despite this anisotropy. 
-        The geometry is thus <em>distorted but functional</em>, not “broken.”</p>
+    <p>Because vectors share a common global bias direction, cosine similarity becomes less discriminative—it measures small angular deviations rather than large semantic ones. However, as Mimno & Thompson note, SGNS still performs well on many tasks despite this anisotropy. The geometry is thus <em>distorted but functional</em>, not “broken.”</p>
+
+    <div class="disclaimer">
+      These geometric effects are empirical and depend on training hyperparameters (e.g., negative sample ratio). Read the original paper for experimental details and assumptions.
+    </div>
   </section>
 
-
-  <!-- Bridge -->
   <section id="bridge">
-    <p>This suggests the optimization objective might be encouraging an easier-to-satisfy configuration than the one we intended. This geometric distortion raises deeper questions: Why does an efficient optimization trick yield such a skewed representation and what does that say about how AI systems pursue proxy goals?</p>
+    <p>This suggests the optimization objective might be encouraging an easier-to-satisfy configuration than the one we intended. This geometric distortion raises deeper questions: Why does an efficient optimization trick yield such a skewed representation—and what does that say about how AI systems pursue proxy goals?</p>
   </section>
 
   <hr>
 
   <!-- PART III -->
   <section id="part-3">
-    <h2>🧭 Part III: This Illustrates Misalignment Ideas, Outer Misalignment (Reward Misspecification)</h2>
-    <p>The SGNS story mirrors <strong>outer misalignment</strong> in AI safety: a system optimizes the literal objective but diverges from the intended goal.</p>
+    <h2>🧭 Part III: An Analogy to Outer Misalignment (Reward Misspecification)</h2>
+    <p>The SGNS story serves as an <strong>analogy</strong>—not a direct equivalence—to <strong>outer misalignment</strong> in AI safety: a system optimizes the literal objective but diverges from the intended goal.</p>
 
     <table>
       <thead><tr><th>Concept</th><th>Applied to SGNS</th></tr></thead>
       <tbody>
         <tr><td><strong>Intended Goal</strong></td><td>Learn embeddings where distances reflect semantics well enough for downstream tasks.</td></tr>
         <tr><td><strong>Proxy Objective</strong></td><td>Efficiently minimize the negative sampling loss ($O(K)$ complexity).</td></tr>
-        <tr><td><strong>Expected Outcome</strong></td><td>A representation that works but is anisotropic.</td></tr>
-        <tr><td><strong>Revised Goal (what researchers later wanted)</strong></td><td>Learn a semantically faithful, isotropic embedding space.</td></tr>
+        <tr><td><strong>Observed Outcome</strong></td><td>A representation that performs well but exhibits anisotropy.</td></tr>
+        <tr><td><strong>Revised Goal (what researchers later wanted)</strong></td><td>Learn a semantically faithful, more isotropic embedding space.</td></tr>
       </tbody>
     </table>
 
-    <p>This is analogous to an AI system exploiting an imperfect reward signal. SGNS didn’t “choose” anisotropy but its optimization process discovered a local minimum that satisfies the proxy efficiently.</p>
+    <div class="analogy">
+      <strong>Analogy note:</strong> SGNS didn’t “choose” anisotropy; rather, its optimization process found a configuration that satisfied the proxy loss efficiently. This mirrors, in a metaphorical sense, how AI systems might over-optimize proxies that diverge from designer intent.
+    </div>
   </section>
 
   <hr>
 
-  <!-- PART VI -->
+  <!-- PART IV -->
   <section id="part-6">
-    <h2>🚨 Part IV: Lessons for General AI Safety and Interpretability</h2>
+    <h2>🚨 Part IV: Lessons for Optimization and Representation</h2>
     <h3>1. The Tyranny of the Proxy</h3>
     <p>Whenever a complex goal is replaced with a measurable proxy, systems might optimize the proxy even if it subverts the true goal. SGNS’s narrow cone might be the efficient shortcut for its loss function.</p>
 
     <h3>2. Interpretability and Asymmetry</h3>
-    <p>SGNS produces two asymmetric spaces ($v_w$, $v'_w$), showing that efficient optimization often warps internal representations. Understanding such internal “geometry drift” is key for interpretability and trustworthy AI design.</p>
-    <p>The SGNS geometry reminds us that efficiency shortcuts can reshape representation space itself a cautionary tale for all proxy-driven optimization.</p>
+    <p>SGNS produces two asymmetric spaces ($v_w$, $v'_w$), showing that efficiency-driven optimization can warp internal representations. Understanding such internal “geometry drift” is crucial for interpretability and reliable model design.</p>
+
+    <p>The SGNS geometry reminds us that computational shortcuts can reshape representation space itself—a useful cautionary story for both NLP and broader AI systems.</p>
   </section>
 
   <hr>
@@ -159,8 +172,8 @@
     <ul class="reference-list">
       <li><span class="ref-authors">1. Mikolov et al. (2013).</span> <strong>Distributed Representations of Words and Phrases and their Compositionality</strong>. <a href="https://arxiv.org/pdf/1310.4546" target="_blank">PDF</a></li>
       <li><span class="ref-authors">2. Mimno & Thompson (2017).</span> <strong>The Strange Geometry of Skip-Gram with Negative Sampling</strong>. <a href="https://aclanthology.org/D17-1308/" target="_blank">ACL Anthology</a></li>
-      <li><span class="ref-authors">4. Mu & Viswanath (2018).</span> <strong>All-but-the-Top: Simple and Effective Post-Processing for Word Representations</strong>. <a href="https://arxiv.org/pdf/1702.01417" target="_blank">arXiv</a></li>
-      <li><span class="ref-authors">5. Ethayarajh et al. (2019).</span> <strong>Understanding Undesirable Word Embedding Associations</strong>. <a href="https://aclanthology.org/P19-1166/" target="_blank">ACL Anthology</a></li>
+      <li><span class="ref-authors">3. Mu & Viswanath (2018).</span> <strong>All-but-the-Top: Simple and Effective Post-Processing for Word Representations</strong>. <a href="https://arxiv.org/pdf/1702.01417" target="_blank">arXiv</a></li>
+      <li><span class="ref-authors">4. Ethayarajh et al. (2019).</span> <strong>Understanding Undesirable Word Embedding Associations</strong>. <a href="https://aclanthology.org/P19-1166/" target="_blank">ACL Anthology</a></li>
     </ul>
   </section>
 </article>
