@@ -1,169 +1,140 @@
-/* Basic Reset and Font Setting */
-body, html {
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
-    font-family: 'Times New Roman', serif; /* Set font to Times New Roman */
-    height: 100%; /* Ensure the body takes up full height of the viewport */
-    display: flex; /* Use flexbox to center content */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    background-color: #f4f4f4; /* Light grey background color */
-    overflow: hidden; /* Prevent scrolling */
+/* --- GLOBAL RESET & BASE STYLES (Apply to all pages) --- */
+body {
+    font-family: 'Arial', sans-serif; /* Use one consistent font family */
+    line-height: 1.6;
+    margin: 0;
+    color: #333;
 }
 
-/* Background Canvas for Conway's Game of Life */
-#game-of-life-background canvas {
-    position: fixed; /* Fix the background to the viewport */
-    top: 0; /* Align to top */
-    left: 0; /* Align to left */
-    width: 100%; /* Full width of the viewport */
-    height: 100%; /* Full height of the viewport */
-    z-index: -1; /* Place behind all other content */
-}
-
-/* Center Box Styling */
-#center-box {
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
-    padding: 10px; /* Padding inside the box */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for a 3D effect */
-    z-index: 1; /* Ensure it's on top of the background */
-    width: 90vh; /* Fixed width */
-    height: 100vh; /* Full height of the viewport */
-    display: flex; /* Use flexbox for layout */
-    flex-direction: column; /* Stack children vertically */
-    justify-content: flex-start; /* Align content to the top */
-    align-items: center; /* Center children horizontally */
-    padding-top: 10vh; /* Adjust top padding to balance content positioning */
-}
-
-/* Top Bar (Navigation Links) */
-.top-bar {
-    width: 100%; /* Full width of the center box */
-    text-align: center; /* Center text horizontally */
-    border-bottom: 2px solid #ccc; /* Bottom border to separate the top bar */
-    border-top: 2px solid #ccc; /* Top border to separate the top bar */
-    padding-bottom: 10px; /* Space below the text */
-    padding-top: 10px; /* Space above the text */
-    margin-bottom: 20px; /* Space below the top bar */
-}
-
-/* Navigation Links Styling */
-.top-bar nav ul {
-    list-style: none; /* Remove bullet points from the list */
-    padding: 0; /* Remove padding */
-    margin: 0; /* Remove margin */
-    display: flex; /* Flexbox to arrange items in a row */
-    justify-content: flex-end; /* Center the links horizontally */
-}
-
-.top-bar nav ul li {
-    margin: 0 10px; /* Space between each list item */
-}
-
-.top-bar nav ul li a {
-    text-decoration: none; /* Remove underline from links */
-    font-size: 1.2em; /* Increase font size for visibility */
-    color: #333; /* Dark grey color */
-    transition: color 0.3s; /* Smooth transition for hover effect */
-}
-
-.top-bar nav ul li a:hover {
-    color: #000; /* Change color to black on hover */
-}
-
-/* Main Content Section */
-.content {
-    display: flex; /* Flexbox for layout */
-    justify-content: space-between; /* Space between the left and right sides */
-    width: 100%; /* Full width of the center box */
-    flex: 1; /* Allow content to expand */
-    margin-top: 20px; /* Space between the top bar and content */
-    align-items: center; /* Center content vertically */
-}
-
-/* Left Side (Text) */
-.left-side {
-    width: 60%; /* Take up 60% of the width */
-    text-align: left; /* Align text to the left */
-}
-
-.left-side h1 {
-    font-size: 2.5em; /* Large font size for name */
-    color: #333; /* Dark grey color */
-    margin: 0; /* Remove margin */
-}
-
-.left-side .title {
-    font-size: 1.5em; /* Medium font size for title */
-    color: #666; /* Lighter grey color */
-    margin: 10px 0; /* Space above and below */
-}
-
-.left-side .bio {
-    font-size: 1.1em; /* Slightly smaller font size for bio */
-    color: #444; /* Medium grey color */
-    margin-top: 20px; /* Space above the bio */
-}
-
-/* Right Side (Photo) */
-.right-side {
-    width: 35%; /* Take up 35% of the width */
-    display: flex; /* Flexbox to center content */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-}
-
-/* Photo Box */
-.photo-box {
-    width: 100%; /* Full width of the right-side container */
-    max-width: 250px; /* Set a maximum width for the photo box */
-    height: auto; /* Maintain aspect ratio */
-    background-color: #e0e0e0; /* Light grey background */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for a 3D effect */
-}
-
-.photo-box img {
-    width: 100%; /* Full width of the photo box */
-    height: auto; /* Maintain aspect ratio */
-    border-radius: 10px; /* Rounded corners */
-    object-fit: cover; /* Ensure the image covers the entire box */
-}
-
-.social-icons-bottom {
-    margin-top: auto; /* Push icons to the bottom */
-    display: flex; /* Flexbox to arrange icons */
-    justify-content: center; /* Center the icons */
-    gap: 15px; /* Space between the icons */
-    padding-bottom: 20px; /* Space below the icons */
-}
-
-.social-icons-bottom img {
-    width: 24px; /* Set icon size */
-    height: 24px; /* Set icon size */
-    transition: transform 0.3s; /* Smooth transform transition */
-}
-
-.social-icons-bottom img:hover {
-    transform: scale(1.2); /* Slightly enlarge icons on hover */
-}
-
-.bottom-nav {
+/* --- GAME OF LIFE BACKGROUND (Preserved) --- */
+#game-of-life-background {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    z-index: -1; /* Keep it behind all content */
+}
+
+/* --- MAIN CONTAINER STYLING (The Center Box) --- */
+#center-box {
+    /* Centralize content */
+    max-width: 900px; 
+    margin: 40px auto; 
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.95); /* White background for readability over the GOL */
+    border-radius: 10px; /* Slight rounding to match blog boxes */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Consistent shadow */
+}
+
+/* --- NAVIGATION STYLING (Top Bar) --- */
+#main-header {
+    /* border-bottom: 2px solid #3498db; Consistent main blue border */
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    text-align: center; /* Center the links */
+}
+
+#main-nav {
+    /* Use flexbox for modern spacing */
     display: flex;
     justify-content: center;
+    gap: 25px; 
+}
+
+#main-nav .nav-link {
+    text-decoration: none;
+    color: #1f2d3a; /* Dark text for links */
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 5px 10px;
+    transition: color 0.3s;
+}
+
+#main-nav .nav-link:hover {
+    color: #3498db; /* Hover color matches the primary blue */
+}
+
+
+/* --- CONTENT LAYOUT (Profile Bio and Photo) --- */
+#content-main {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start; /* Aligns content to the top */
+}
+
+#profile-bio {
+    flex: 2; /* Takes up more space */
+}
+
+#profile-photo {
+    flex: 1; /* Takes up less space */
+    text-align: right;
+}
+
+#profile-photo img {
+    width: 100%; /* Make photo responsive */
+    max-width: 300px; 
+    border-radius: 10%; /* Make it round */
+    border: 1px solid #484b4e; /* Use primary blue border */
+}
+
+/* --- HEADINGS AND TEXT --- */
+#profile-bio h1 {
+    color: #2c3e50;
+    margin-top: 0;
+    font-size: 2.5em;
+    /* Remove the old underline or styling if any */
+}
+
+.title {
+    color: #e74c3c; /* Use a secondary color for the title/tagline */
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.bio {
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* --- SOCIAL ICONS --- */
+#social-links {
+    display: flex;
     gap: 15px;
-    padding: 10px 0;
-    background-color: rgba(255, 255, 255, 0.9);
+    margin-top: 20px;
 }
 
-.bottom-nav img {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.3s;
+#social-links img {
+    width: 28px; 
+    height: 28px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
 }
 
-.bottom-nav img:hover {
-    transform: scale(1.2);
+#social-links a:hover img {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* --- RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    #center-box {
+        margin: 20px 10px;
+        padding: 20px;
+    }
+    #content-main {
+        flex-direction: column; /* Stack vertically on small screens */
+        align-items: center;
+        text-align: center;
+    }
+    #profile-photo {
+        order: -1; /* Move photo to the top */
+        margin-bottom: 20px;
+    }
+    #main-nav {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
 }

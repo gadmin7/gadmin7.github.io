@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>When Probabilities Disagree: Understanding KL Divergence</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrF2T93M65+dK4K4Y4rG7z2/z6N7F6K9W5J9G5" crossorigin="anonymous">
+    
+    <style>
+        /* Minimal styling for readability */
+        body { font-family: Arial, sans-serif; line-height: 1.7; margin: 0 auto; max-width: 900px; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; margin-top: 1.5em; }
+        h1 { border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        /* Style for display equations (where we put the math) */
+        .math-display { 
+            font-size: 1.2em; 
+            margin: 1.5em 0; 
+            padding: 10px; 
+            background: #ecf0f1; 
+            border-radius: 4px; 
+            text-align: center;
+        }
+        ul { margin-bottom: 1.5em; }
+        .demo-link { 
+            display: block; 
+            text-align: center; 
+            margin: 30px 0; 
+            padding: 15px 20px; 
+            background-color: #3498db; 
+            color: white; 
+            text-decoration: none; 
+            font-size: 1.2em; 
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .demo-link:hover { background-color: #2980b9; }
+        .summary-box { 
+            border: 1px solid #3498db; 
+            padding: 15px; 
+            border-left: 5px solid #3498db; 
+            margin: 20px 0; 
+            background-color: #f7f9fb;
+        }
+    </style>
+</head>
+<body>
+
+    <nav style="margin-bottom: 20px;">
+        <a href="../index.html">← Portfolio Home</a> | 
+        <a href="../blogs.html">← Back to Blog List</a>
+    </nav>
+
+    <article>
+        <h1>When Probabilities Disagree: Understanding Entropy, Cross-Entropy, and KL Divergence Through Intuition and Visualization</h1>
+        <p style="color: #666; font-style: italic;">Post by GT1999</p>
+        
+        <hr>
+
+        <div class="summary-box">
+            <h3>Summary</h3>
+            <p>This post unpacks how information theory concepts — **entropy**, **cross-entropy**, and **Kullback-Leibler (KL) divergence**, connect to machine learning.</p>
+            <p>We’ll explore their intuition, why KL is **asymmetric**, why forward KL underpins classification loss, and how maximizing likelihood links to minimizing cross-entropy. An accompanying interactive demo helps build visual and numerical intuition.</p>
+        </div>
+
+        <section id="section-1">
+            <h2>1. Information and Entropy</h2>
+            <p>Entropy quantifies **uncertainty** in a probability distribution. For a discrete random variable $X$ with probabilities $p(x)$:</p>
+            
+            <div class="math-display">
+                <span class="katex-expression">H(p)=−\sum_x p(x) \log p(x)</span>
+            </div>
+            
+            <p>*(Entropy $H(p)$ equals the negative expected log probability.)*</p>
+            
+            <ul>
+                <li>**High entropy** → uncertain outcomes (uniform distribution)</li>
+                <li>**Low entropy** → confident outcomes (peaked distribution)</li>
+            </ul>
+            <p>Entropy measures the **expected surprise** — how much information we gain when we learn the actual outcome.</p>
+        </section>
+
+        <section id="section-2">
+            <h2>2. Cross-Entropy and Its Link to KL Divergence</h2>
+            <p>If we have a *true distribution* $p(x)$ and a *model distribution* $q(x)$, the **cross-entropy** is:</p>
+            
+            <div class="math-display">
+                <span class="katex-expression">H(p,q)=−\sum_x p(x) \log q(x)</span>
+            </div>
+            
+            <p>*(Cross-entropy $H(p, q)$ measures the average number of bits needed to encode data from $p$ using a model that assumes $q$.)*</p>
+            
+            <p>Decomposing this gives:</p>
+            
+            <div class="math-display">
+                <span class="katex-expression">H(p,q)=H(p)+D_{KL}(p \Vert q)</span>
+            </div>
+            
+            <p>*(That is, cross-entropy equals entropy plus the KL divergence between $p$ and $q$.)*</p>
+            
+            <p>So minimizing **cross-entropy** is equivalent to minimizing **forward KL divergence**, since $H(p)$ is constant for fixed data.</p>
+        </section>
+
+        <section id="section-3">
+            <h2>3. KL Divergence: Measuring Distributional Disagreement</h2>
+            <p>The **Kullback-Leibler divergence** measures how much one probability distribution diverges from another:</p>
+            
+            <div class="math-display">
+                <span class="katex-expression">D_{KL}(p \Vert q) = \sum_x p(x) \log \frac{p(x)}{q(x)}</span>
+            </div>
+            
+            <p>*(KL divergence $D_{KL}(p \Vert q)$ equals the expected log ratio of $p$ over $q$.)*</p>
+            
+            <ul>
+                <li>$D_{KL}(p \Vert q) = 0$ only if $p = q$</li>
+                <li>It’s **not symmetric** — $D_{KL}(p \Vert q) \neq D_{KL}(q \Vert p)$</li>
+            </ul>
+
+            <h3>Why Asymmetry Matters</h3>
+            <ul>
+                <li>**Forward KL ($D_{KL}(p \Vert q)$):** Penalizes missing any region where $p$ assigns probability mass — it **covers all modes**.</li>
+                <li>**Reverse KL ($D_{KL}(q \Vert p)$):** Penalizes assigning probability where $p$ has none — it **collapses to dominant modes**.</li>
+            </ul>
+            <p>This asymmetry explains different behaviors in optimization and generative modeling (e.g., mode covering vs. mode seeking).</p>
+        </section>
+
+        <section id="section-4">
+            <h2>4. Why Forward KL for Classification</h2>
+            <p>In supervised classification:</p>
+            <ul>
+                <li>The data gives us *true* labels — effectively a one-hot distribution $p(x)$.</li>
+                <li>The model predicts a softmax output $q(x)$.</li>
+            </ul>
+            <p>For a one-hot label where $p(x) = 1$ for the correct class $x_c$:</p>
+            
+            <div class="math-display">
+                <span class="katex-expression">H(p,q)=−\log q(x_c)</span>
+            </div>
+            
+            <p>*(Cross-entropy loss reduces to the negative log probability of the correct class.)*</p>
+            
+            <p>That’s the familiar **cross-entropy loss** used in training neural networks. We minimize the divergence from the *true* data distribution to our model’s predictions — hence, **forward KL**.</p>
+        </section>
+
+        <section id="section-5">
+            <h2>5. Why Not Reverse KL?</h2>
+            <p>If we instead minimized $D_{KL}(q \Vert p)$:</p>
+            <ul>
+                <li>$q$ would try to assign mass only where $p$ is non-zero.</li>
+                <li>For one-hot labels, this collapses trivially and gives no useful gradient unless predictions are perfect.</li>
+            </ul>
+            <p>Reverse KL is useful in **generative modeling** (e.g., variational inference) but not in **discriminative classification**.</p>
+        </section>
+
+        <section id="section-6">
+            <h2>6. From Maximum Likelihood to Cross-Entropy</h2>
+            <p>Training via **maximum likelihood estimation** is equivalent to minimizing cross-entropy:</p>
+            
+            <div class="math-display">
+                <span class="katex-expression">\max_\theta \sum_i \log q_\theta(x_i) \quad \Longleftrightarrow \quad \min_\theta H(p, q_\theta)</span>
+            </div>
+            
+            <p>*(Maximizing the log-likelihood of the data equals minimizing cross-entropy between the data distribution and the model.)*</p>
+            <p>So **cross-entropy loss** is not arbitrary — it emerges directly from the statistical principle of likelihood maximization.</p>
+        </section>
+
+        <section id="section-7">
+            <h2>7. Interactive Demo: Explore and Build Intuition</h2>
+            <p>Play with probabilities, toggle one-hot vs. soft labels, and see entropy and KL values change dynamically.</p>
+
+            <a href="https://huggingface.co/spaces/GT1999/kl-divergence-playground" target="_blank" class="demo-link">
+                👉 Launch Interactive Demo on Hugging Face Spaces
+            </a>
+        </section>
+
+        <section id="section-8">
+            <h2>8. Key Takeaways</h2>
+            <ul>
+                <li>**Entropy** measures uncertainty within one distribution.</li>
+                <li>**Cross-Entropy** compares a true distribution and a model distribution.</li>
+                <li>**KL Divergence** quantifies their disagreement — and its direction (forward vs. reverse) changes optimization behavior.</li>
+                <li>**Forward KL = Cross-Entropy − Entropy**, hence used in classification.</li>
+                <li>**Maximum Likelihood = Cross-Entropy Minimization.**</li>
+            </ul>
+            <p>Understanding these relationships helps bridge *information theory* and *machine learning practice*.</p>
+        </section>
+
+        <section id="references">
+            <h2>References</h2>
+            <ol>
+                <li><a href="https://youtu.be/sbvv-uQmwVY?si=CZH4CYl6bpe4kJ3i" target="_blank">DeepMind Lecture: Information Theory for Machine Learning (YouTube)</a></li>
+                <li>Kristiadi, A. “Forward vs Reverse KL” blog. <a href="https://agustinus.kristia.de/blog/forward-reverse-kl/" target="_blank">agustinus.kristia.de/blog/forward-reverse-kl/</a></li>
+            </ol>
+        </section>
+        
+    </article>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-HjrWf5o5l8f2+2L5f2Q1/YJ9V4E4K4K9Z4W8N4W6J9P5L9Q7G6K4W8N5L8G9K6W6K9W5J9G5" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" integrity="sha384-Fk8Y2I4p7YV+v2Z3q1Yp6P3Q5W4S9N7Y5K8W4G7S6L3P4Q2Y7W7H8G6K4W8N5L8G9K6W6K9W5J9G5" crossorigin="anonymous"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '\\[', right: '\\]', display: true}
+            ],
+            // Enable CSS styling for the auto-rendered math
+            ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        });">
+    </script>
+
+</body>
+</html>

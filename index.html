@@ -1,60 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Your Name - Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gauri Toshniwal - Portfolio</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div id="game-of-life-background"></div>
 
     <div id="center-box">
-        <div class="top-bar">
-            <nav>
-                <ul>
-                    <li><a href="data/GauriToshniwalResume.pdf">Resume</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="blogs.html">Blog</a></li>
-                    <li><a href="courses.html">Courses</a></li>
-                </ul>
+        <header id="main-header">
+            <nav id="main-nav">
+                <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
+                <a href="publications.html" class="nav-link">Publications</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <a href="myblogs.html" class="nav-link">Blog</a>
+                <a href="courses.html" class="nav-link">Courses</a>
             </nav>
-        </div>
-        <div class="content">
-            <div class="left-side">
+        </header>
+
+        <section id="content-main">
+            <div id="profile-bio">
                 <h1>Gauri Toshniwal</h1>
                 <p class="title">Data Scientist | NLP | AI Alignment</p>
-                <p class="bio">Welcome to my corner of the digital world! I'm Gauri Toshniwal, a data-driven enthusiast and a passionate advocate for using technology to create meaningful impact. Currently pursuing my Master's in Data Analytics at NIT Trichy, focusing on Math Word Problem Solving. I am actively looking for full-time opportunities in ML and NLP. Always eager to connect and collaborate—feel free to reach out!</p>
-                <div class="bottom-nav">
-                        <a href="https://www.linkedin.com/in/gauri-toshniwal-52579b188/" target="_blank">
-                            <img src="images/linkedin-brands-solid.svg" alt="LinkedIn">
-                        </a>
-                        <a href="https://github.com/gadmin7" target="_blank">
-                            <img src="images/github-brands-solid.svg" alt="GitHub">
-                        </a>
-                        <a href="https://scholar.google.com/citations?user=W30krIUAAAAJ&hl=en" target="_blank">
-                            <img src="images/google-scholar-brands-solid.svg" alt="Google Scholar">
-                        </a>
-                        <a href="https://leetcode.com/u/Ascii7/" target="_blank">
-                            <img src="images/leetcode.png" alt="LeetCode">
-                        </a>
-                        <a href="https://www.kaggle.com/gauritoshniwal">
-                            <img src="images/kaggle-brands-solid.svg" alt="Kaggle">
-                        </a>
-                        <a href="mailto:gaurigst1970@gmail.com">
-                            <img src="images/envelope-solid.svg" alt="Email">
-                        </a>                
+                <p class="bio">Welcome to my corner of the digital world! I’m Gauri Toshniwal, an AI/ML Engineer who cares deeply about building technology that creates meaningful and responsible impact.
+
+                    I’m actively seeking full-time opportunities in ML and NLP where I can contribute in a way that truly matters. My interests span LLM training and fine-tuning, scalable systems, and AI alignment, evaluation, and safety; understanding how to make models not just powerful, but transparent and aligned with human intent.
+                    
+                    My long-term goal is to help bridge the gap between real-world deployment and responsible AI behavior. Always eager to connect and collaborate feel free to reach out!</p>
+                
+                <div id="social-links">
+                    <a href="https://www.linkedin.com/in/gauri-toshniwal-52579b188/" target="_blank">
+                        <img src="images/linkedin-brands-solid.svg" alt="LinkedIn">
+                    </a>
+                    <a href="https://github.com/gadmin7" target="_blank">
+                        <img src="images/github-brands-solid.svg" alt="GitHub">
+                    </a>
+                    <a href="https://scholar.google.com/citations?user=W30krIUAAAAJ&hl=en" target="_blank">
+                        <img src="images/google-scholar-brands-solid.svg" alt="Google Scholar">
+                    </a>
+                    <a href="https://leetcode.com/u/Ascii7/" target="_blank">
+                        <img src="images/leetcode.png" alt="LeetCode">
+                    </a>
+                    <a href="https://www.kaggle.com/gauritoshniwal">
+                        <img src="images/kaggle-brands-solid.svg" alt="Kaggle">
+                    </a>
+                    <a href="mailto:gaurigst1970@gmail.com">
+                        <img src="images/envelope-solid.svg" alt="Email">
+                    </a>                
                 </div>
             </div>
-            <div class="right-side">
-                <div class="photo-box">
-                    <img src="images/GT.png" alt="Your Photo">
-                </div>
+            
+            <div id="profile-photo">
+                <img src="images/GT.png" alt="Gauri Toshniwal Photo">
             </div>
-        </div>
+        </section>
     </div>
     
-
     <script src="js/script.js"></script>
 </body>
 </html>

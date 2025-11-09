@@ -3,74 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Courses - Gauri Toshniwal</title>
-    <link rel="stylesheet" href="css/shared-styles.css">
-    <link rel="stylesheet" href="css/courses-styles.css">
+    <title>Courses & Certifications - Gadmin7</title>
+    
+    <style>
+        /* Minimal styling for the courses page (adjust to match your primary CSS) */
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; max-width: 900px; padding: 20px; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 30px; }
+        
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .course-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .course-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .course-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .course-details {
+            padding: 15px;
+        }
+        .course-details h2 {
+            font-size: 1.25em;
+            color: #34495e;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .course-details p {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+        .course-box a {
+            display: block;
+            text-decoration: none;
+        }
+        #main-nav { 
+            /* New Styles for Grey Background */
+            background-color: #f7f7f7; /* The dark gray you chose */
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            gap: 25px; 
+        }
+        #main-nav .nav-link { 
+            text-decoration: none;
+            color: #2c3e50; /* Changed link color to white (#fff) for better contrast on dark gray background */
+            font-weight: bold;
+            font-size: 1.0em;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+        #main-nav .nav-link:hover { 
+            color: #3498db; /* Blue hover color */
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="top-nav">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="data/GauriToshniwalResume.pdf" class="nav-link">Resume</a>
-            <a href="projects.html" class="nav-link">Projects</a>
-            <a href="blogs.html" class="nav-link">Blogs</a>
-            <a href="courses.html" class="nav-link">Courses</a>
-        </nav>
-        <h1>Training Epochs</h1>
-    </header>
-    <div class="courses-container">
-        <div class="courses-grid">
+   
+    <nav id="main-nav">
+        <a href="index.html" target="_blank" class="nav-link">Home</a>
+        <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
+        <a href="publications.html" class="nav-link">Publications</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="myblogs.html" class="nav-link">Blog</a>
+        <a href="courses.html" class="nav-link">Courses</a>
+    </nav>
+
+    <main>
+        <h1>Courses & Professional Certifications</h1>
+
+        <div class="course-grid">
+            
             <div class="course-box">
                 <a href="https://course.bluedot.org/certification?id=recLbenlb4PoPIokq&utm_campaign=Send+email%3A+participant+feedback+form&utm_content=Participant+confirm+receipt+of+feedback&utm_medium=email_action&utm_source=customer.io" target="_blank">
-                <img src="images/certificates/AISafety.png" alt="Course 1 Certificate"> </a>
+                    <img src="images/certificates/AISafety.png" alt="AI Safety Fundamentals: Alignment Certificate">
+                </a>
                 <div class="course-details">
                     <h2>AI Safety Fundamentals: Alignment</h2>
                     <p>Date Issued: June 2024</p>
                     <p>Affiliation: BluDot Impact</p>
                 </div>
             </div>
+
             <div class="course-box">
-                <img src="images/certificates/Summer_School_RAI.jpg" alt="Course 2 Certificate">
+                <img src="images/certificates/Summer_School_RAI.jpg" alt="Responsible and Safe AI Certificate">
                 <div class="course-details">
                     <h2>Responsible and Safe AI</h2>
                     <p>Date Issued: June 2024</p>
                     <p>Affiliation: ACM Summer School</p>
                 </div>
             </div>
+
             <div class="course-box">
-                <img src="images/certificates/udemy_bigquery.png" alt="Course 3 Certificate">
+                <img src="images/certificates/udemy_bigquery.png" alt="BigQuery ML Certificate">
                 <div class="course-details">
                     <h2>BigQuery ML</h2>
                     <p>Date Issued: Jan 2025</p>
                     <p>Affiliation: Udemy, Google BigQuery</p>
                 </div>
             </div>
+
             <div class="course-box">
-                <img src="images/certificates/Coursera_IBM_data_science_specialization.jpg" alt="Course 4 Certificate">
+                <img src="images/certificates/Coursera_IBM_data_science_specialization.jpg" alt="Data Science Specialization Certificate">
                 <div class="course-details">
                     <h2>Data Science Specialization</h2>
                     <p>Date Issued: May 2020</p>
                     <p>Affiliation: Coursera, IBM</p>
                 </div>
             </div>
+
             <div class="course-box">
-                <img src="images/certificates/Coursera_python_specialization.jpg" alt="Course 5 Certificate">
+                <img src="images/certificates/Coursera_python_specialization.jpg" alt="Python for Everybody Certificate">
                 <div class="course-details">
                     <h2>Python for Everybody</h2>
                     <p>Date Issued: June 2020</p>
                     <p>Affiliation: Coursera, University of Michigan</p>
                 </div>
             </div>
+
             <div class="course-box">
-                <img src="images/certificates/Coursera_git.jpg" alt="Course 6 Certificate">
+                <img src="images/certificates/Coursera_git.jpg" alt="Version Control with GIT Certificate">
                 <div class="course-details">
                     <h2>Version Control with GIT</h2>
                     <p>Date Issued: May 2020</p>
                     <p>Affiliation: Coursera, Atlassian</p>
                 </div>
             </div>
-            <!-- Add more course boxes as needed -->
+
         </div>
-    </div>
-</body>
+        
+    </main>
+    
+    </body>
 </html>

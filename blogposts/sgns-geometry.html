@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: The Skip-Gram Misalignment. Word2Vec's Geometric Flaw and AI Safety.</title>
+    <link rel="stylesheet" href="../css/styles.css"> 
+    
+    <style>
+        /* Minimal styling for readability (Use external CSS for actual design) */
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; max-width: 900px; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        h1 { border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 30px; }
+        pre { background: #f4f4f4; padding: 10px; border-left: 3px solid #007bff; overflow-x: auto; }
+        .analogy { background-color: #eaf6ff; padding: 15px; border-radius: 5px; margin: 15px 0; border: 1px solid #c9e6ff;}
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .reference-list { list-style-type: none; padding-left: 0; }
+        .reference-list li { margin-bottom: 15px; padding-left: 20px; text-indent: -20px; }
+        .ref-authors { font-weight: bold; }
+        .math-block { margin: 20px 0; text-align: center; }
+        .blog-image {
+            max-width: 100%; /* Ensures image never exceeds its container's width */
+            height: auto;    /* Maintains aspect ratio */
+            border: 1px solid #ccc; /* Retain your border style */
+            margin-bottom: 10px; /* Retain your margin style */
+        }
+
+    </style>
+</head>
+<body>
+
+    <header id="main-header">
+        <nav style="margin-bottom: 20px;">
+            <a href="../index.html">← Portfolio Home</a> | 
+            <a href="../myblogs.html">Blog</a>
+        </nav>
+    </header>
+
+    <article>
+        <h1>The Billion-Word Hack: How Word2Vec's Speed Secret Created a Hidden Geometric Flaw</h1>
+        <p style="color: #666; font-style: italic;">Published: November 9, 2025</p>
+        
+        <hr>
+
+        <section id="part-1">
+            <h2>🧩 Part I: The Computational Crisis and the Brilliant Hack</h2>
+
+            <h3>The Goal: Perfect Word Geometry</h3>
+            <p>For decades, NLP’s holy grail was to encode a word’s meaning into a numerical vector such that <strong>Vector Similarity $\approx$ Semantic Similarity</strong>. The closer two vectors in space, the more related their meanings.</p>
+
+            <h3>The Solution: The Skip-Gram Model</h3>
+            <figure style="text-align: center; margin: 20px 0;"></figure>
+                <img src="../images/skip_gram.png" alt="Figure From Paper" class="blog-image">
+            </figure>
+            <p>The Skip-gram model reframed language modeling as a prediction problem: Given a center word ($w_t$), predict its surrounding context words ($w_{t+j}$). The objective is to maximize:</p>
+            <div class="math-block">
+                $$
+                \frac{1}{T}\sum_{t=1}^{T}\sum_{-c \le j \le c, j \ne 0}\log p(w_{t+j} | w_t) \tag{1}
+                $$
+            </div>
+            <p>The conditional probability is modeled using the <strong>Softmax</strong> function:</p>
+            <div class="math-block"></div>
+                $$
+                p(w_O|w_I) = \frac{\exp((v'_{w_O})^\top v_{w_I})} {\sum_{w=1}^{|V|} \exp((v'_w)^\top v_{w_I})} \tag{2}
+                $$
+            </div>
+            <p>Here, $v_w$ and $v'_w$ are the “input” and “output” vector representations of $w$, and $|V|$ is the number of words in the vocabulary.</p>
+            <h3>The Bottleneck: The Softmax Tsunami</h3>
+            <p>This softmax requires computing the denominator over all vocabulary words ($|V|$ often $10^5–10^7$). This necessitated millions of computations per step, making training on billion-word datasets infeasible ($O(|V|)$ cost).</p>
+
+            <h3>The SGNS Hack: Trading Purity for Speed</h3>
+            <p>Tomas Mikolov and colleagues introduced <strong>Skip-Gram with Negative Sampling (SGNS)</strong> a brilliant approximation that reframed the multi-class prediction problem as $K+1$ binary classification tasks.</p>
+            <p>The new loss function trains a binary logistic regression to distinguish true context ($w_O$) from $K$ random negative samples ($w_i$):</p>
+            <div class="math-block">
+                $$
+                L = \log \sigma({v'_{w_O}}^\top v_{w_I}) + \sum_{i=1}^{K} \mathbb{E}_{w_i \sim P_n(w)} \left[ \log \sigma(-{v'_{w_i}}^\top v_{w_I}) \right] \tag{3}
+                $$
+            </div>
+    
+            <p>This simple trick reduced complexity from $O(|V|)$ to $O(K)$.</p>
+
+            <h3>The Binary Decision Layer: Two Sets of Vectors</h3>
+            <p>SGNS learns two distinct embedding matrices: <strong>Input vectors $v_w$</strong> (words as predictors) and <strong>Output vectors $v'_w$</strong> (words as predicted contexts). For downstream tasks, we use the input embeddings $v_w$.</p>
+        </section>
+
+        <hr>
+
+        <section id="part-2">
+            <h2>📐 Part II: The Unintended Consequence "The Narrow Cone"</h2>
+            <p>In 2017, Mimno and Thompson revealed a geometric pathology: when trained on large corpora, the input vectors $v_w$ occupy a <strong>narrow cone</strong> in the high-dimensional space rather than being uniformly distributed (isotropic).</p>
+
+            <h3>The Strange Geometry: </h3>
+            <ul> 
+            <li>SGNS vectors are arranged along a primary axis.</li>
+            <li>SGNS vectors are mostly non-negative.</li>
+            <li>SGNS context vectors point away from the word vectors.</li>
+            </ul>
+            <figure style="text-align: center; margin: 20px 0;"></figure>
+                <img src="../images/SGNS_geometry.jpg" alt="Figure From Paper" class="blog-image">
+                <figcaption>Figure 2: Distribution of word vectors illustrations from (Mimno & Thompson, 2017).</figcaption>
+            </figure>
+            
+
+            <h3>The Cost to Cosine Similarity</h3>
+            <p>Since all vectors are already pointing in roughly the same direction, <strong>cosine similarity loses discriminative power</strong>. It measures only tiny angular variations within the crowded cone, rather than true semantic distance. The computational hack created a geometric distortion.</p>
+        </section>
+
+        <hr>
+
+        <section id="part-3">
+            <h2>🧭 Part III: The Meta-Lesson: Outer Misalignment (Reward Misspecification)</h2>
+            <p>The SGNS story is a perfect conceptual example of <strong>Outer Misalignment (Reward Misspecification)</strong>, a critical concept in AI safety. The flaw lies in the gap between the intended goal and the proxy reward.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Applied to SGNS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Latent Intent / Ideal Goal</strong></td>
+                        <td>Learn a semantically faithful, <strong>isotropic</strong> vector space.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxy Objective</strong></td>
+                        <td>Maximize Negative Sampling loss efficiently (optimized for $O(K)$ speed).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outcome (Goal Misgeneralization)</strong></td>
+                        <td>The model found a <strong>shortcut</strong>: crowding vectors into a <strong>narrow cone</strong> to efficiently satisfy the proxy loss, thus <strong>distorting the latent intent</strong> (geometry).</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>The model optimized the <strong>literal objective</strong> perfectly, yet failed to achieve the <strong>latent intent</strong> of preserving clean geometry. This is the hallmark of misalignment.</p>
+        </section>
+
+        <hr>
+
+        <section id="part-4">
+            <h2>🧭 Part IV: Why SGNS Geometry Breaks Linear Fairness Solutions</h2>
+            <p>The linear debiasing technique <strong>subspace projection</strong> ($v_{\text{new}} = v - (v \cdot g)g$) assumes a simple, linear embedding space. SGNS's narrow cone geometry breaks this foundation.</p>
+
+            <h3>📉 The Narrow Cone Problem</h3>
+            <p>The anisotropy (non-uniform distribution) means the "bias" direction often aligns with the global mean of the entire cone. Subtracting this direction doesn't just remove bias it <strong>distorts the global semantic space</strong>, further compressing relationships within the already crowded cone. Projection assumes a world SGNS broke.</p>
+
+            <h3>🧠 Entangled Bias</h3>
+            <p>Because SGNS uses biased sampling ($P_n(w) \propto U(w)^{3/4}$), gender bias is not a clean, linear axis; it’s <strong>entangled</strong> with word frequency bias. The SGNS objective distributes bias throughout the manifold, meaning removing one axis only fixes a fraction of the problem.</p>
+        </section>
+
+        <hr>
+        
+        <section id="part-5">
+            <h2>🚨 Part V: Lessons for General AI Safety and Interpretability</h2>
+            <p>The SGNS story, though about word vectors, offers two crucial lessons for designing and aligning future large AI systems:</p>
+
+            <h3>1. The Tyranny of the Proxy</h3>
+            <p>Any time a complex goal (e.g., "be safe," "maximize human flourishing") is substituted with a simple, measurable proxy (e.g., "maximize reward signal," "minimize loss"), the system will find the most efficient path to satisfy the proxy, <strong>even if it degrades the core goal</strong>. The narrow cone is the efficient shortcut solution to the Negative Sampling loss.</p>
+
+            <h3>2. Interpretability is Compromised by Optimization</h3>
+            <p>The fact that SGNS produces two mathematically distinct and opposing embedding spaces ($v_w$ and $v'_w$) demonstrates the difficulty of <strong>interpreting internal representations</strong> in efficient systems. If the geometry is warped and the spaces are asymmetric, understanding why the model makes a prediction becomes challenging. When a flaw like gender bias is discovered, fixing it is difficult because the flaw is not neatly localized but "smeared" across the entire optimized geometry.</p>
+        </section>
+
+        <hr>
+
+        <section id="references">
+            <h2>📚 References</h2>
+            <ul class="reference-list">
+                <li>
+                    <span class="ref-authors">1. Mikolov, T., Sutskever, I., Chen, K., Corrado, G., & Dean, J. (2013).</span> <strong>Distributed Representations of Words and Phrases and their Compositionality</strong>.<a href="https://arxiv.org/pdf/1310.4546" target="_blank">PDF</a>
+                </li>
+                <li>
+                    <span class="ref-authors">2. Mimno, D., & Thompson, L. (2017).</span> <strong>The Strange Geometry of Skip-Gram with Negative Sampling</strong>. <a href="https://aclanthology.org/Q17-1010/" target="_blank">ACL Anthology</a>
+                </li>
+                <li>
+                    <span class="ref-authors">3. Ethayarajh, K., Duvenaud, D., & Hirst, G. (2019).</span> <strong>Understanding Undesirable Word Embedding Associations</strong>.<a href="https://aclanthology.org/P19-1065/" target="_blank">ACL Anthology</a>
+                </li>
+                 <li>
+                    <span class="ref-authors">4. Bolukbasi, T., Chang, K. W., Zou, J. Y., Saligrama, V., & Kalai, A. T. (2016).</span> <strong>Man is to Doctor as Woman is to Nurse: Analogies and Biases in Word Embeddings</strong>. <a href="https://proceedings.neurips.cc/paper/2016/file/a488a0ad05842b1057406a3c6381a1bb-Paper.pdf" target="_blank">PDF</a>
+                </li>
+                <li>
+                    <span class="ref-authors">5. NPTEL IIT Delhi. (2025).</span> <strong>Lec 07 | Word Representation: Word2Vec & fastText</strong>. <a href="https://www.youtube.com/watch?v=KKJxzPxhkdo" target="_blank">YouTube</a>
+                </li>
+            </ul>
+        </section>
+    </article>
+
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</body>
+</html>

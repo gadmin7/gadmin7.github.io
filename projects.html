@@ -3,58 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Projects - Gauri Toshniwal</title>
-    <link rel="stylesheet" href="css/shared-styles.css">
-    <link rel="stylesheet" href="css/projects-styles.css">
+    <title>Projects - Gadmin7</title>
+    
+    <style>
+        /* Minimal styling for project boxes (adjust to match your primary CSS) */
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; max-width: 900px; padding: 20px; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 30px; }
+        h2 { color: #34495e; margin-top: 0; font-size: 1.5em; }
+        
+        .project-list {
+            padding: 0;
+            list-style: none;
+        }
+        .project-box { 
+            margin-bottom: 40px; 
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        .project-box:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .project-description {
+            color: #555;
+            margin: 10px 0 15px 0;
+        }
+        .project-date { 
+            font-size: 0.9em; 
+            color: #7f8c8d; 
+            margin-bottom: 10px;
+            border-top: 1px dashed #eee;
+            padding-top: 5px;
+        }
+        .project-links a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #e74c3c; /* A distinct link color for actions */
+            font-weight: bold;
+        }
+        .project-links a:hover {
+            text-decoration: underline;
+        }
+        #main-nav { 
+            /* New Styles for Grey Background */
+            background-color: #f7f7f7; /* The dark gray you chose */
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            gap: 25px; 
+        }
+        #main-nav .nav-link { 
+            text-decoration: none;
+            color: #2c3e50; /* Changed link color to white (#fff) for better contrast on dark gray background */
+            font-weight: bold;
+            font-size: 1.0em;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+        #main-nav .nav-link:hover { 
+            color: #3498db; /* Blue hover color */
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="top-nav">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="data/GauriToshniwalResume.pdf" class="nav-link">Resume</a>
-            <a href="projects.html" class="nav-link">Projects</a>
-            <a href="blogs.html" class="nav-link">Blogs</a>
-            <a href="courses.html" class="nav-link">Courses</a>
-        </nav>
-        <h1>Projects</h1>
-    </header>
-    </header>
-    <div class="projects-container">
-        <div class="projects-grid">
-            <div class="project-box">
-                <h2>Contextual QA for Financial Causality Detection Combining Extractive and Generative Models</h2>
-                <p class="project-description">We present our approach for FinCausal 2025, a task extracting causal relationships from financial text. Using a consciousAI RoBERTa-base encoder model fine-tuned on SQuADx and FinCausal datasets, combined with Gemma2-9B for answer refinement, our team Sarang achieved 3rd place with 96.74% SAS and 70.14% EM scores. </p>
-                <div class="project-date">Completed: Dec 2024</div>
-                <div class="project-links">
-                    <a href="https://aclanthology.org/2025.finnlp-1.25/" target="_blank">Paper</a>
-                </div>
-            </div>
-            <div class="project-box">
+
+    <nav id="main-nav">
+        <a href="index.html" target="_blank" class="nav-link">Home</a>
+        <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
+        <a href="publications.html" class="nav-link">Publications</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="myblogs.html" class="nav-link">Blog</a>
+        <a href="courses.html" class="nav-link">Courses</a>
+    </nav>
+
+    <main>
+        <h1>🛠️ Key Projects & Demos</h1>
+
+        <ul class="project-list">
+            
+            <li class="project-box">
                 <h2>Closed Domain Event Extraction On RAMS Dataset</h2>
-                <p class="project-description">This project leverages deep learning for event extraction on the RAMS dataset, addressing both intra-sentence and cross-sentence argument extraction. By converting event trigger and argument detection into token classification tasks using BIO tagging, we apply BERT-based models for effective event extraction.</p>
+                <p class="project-description">This project leverages BERT-based models for effective event extraction on the RAMS dataset, focusing on identifying events and their arguments. We address both intra-sentence and cross-sentence argument extraction by converting event trigger and argument detection into standard BIO tagging (token classification) tasks.</p>
                 <div class="project-date">Completed: June 2024</div>
                 <div class="project-links">
-                    <a href="https://github.com/gadmin7/closed-domain-event-extraction" target="_blank">Github Repo</a>
+                    <a href="https://github.com/gadmin7/closed-domain-event-extraction" target="_blank">GitHub Repo</a>
                 </div>
-            </div>
-            <div class="project-box">
-                <h2>Real Time Translation To Remove Communication Barrier</h2>
-                <p class="project-description">We develop a one-stop solution for communication barriers, integrating language translation, Indian Sign Language (ISL) recognition, and NLP-based English-to-ISL conversion into a single web application. Our approach achieves high accuracy on ISL recognition using two custom-created datasets, including video and hand landmark data.</p>
+            </li>
+
+            <li class="project-box">
+                <h2>Real Time Translation to Remove Communication Barrier (ISL Recognition)</h2>
+                <p class="project-description">A comprehensive solution designed to dismantle communication barriers by integrating three core components: real-time language translation, Indian Sign Language (ISL) recognition, and NLP-based English-to-ISL conversion. Our approach achieved high accuracy on ISL recognition by training on two custom-created datasets featuring video and hand landmark data.</p>
                 <div class="project-date">Date: June 2021</div>
                 <div class="project-links">
                     <a href="https://github.com/gadmin7/Indian-Sign-Language-Recognition" target="_blank">GitHub Repo</a>
                     <a href="data/Real_time_translation_to_remove communication_barrier.pdf" target="_blank">Project Thesis</a>
                 </div>
-            </div>
-            <div class="project-box">
-                <h2>Object Detection In Indian Food Platters Using Transfer Learning With YOLOv4</h2>
-                <p class="project-description">We present IndianFood10, a comprehensively labeled dataset for object detection in Indian food dishes, overcoming challenges like non-distinct boundaries and high intra-class variation. Using YOLOv4 with transfer learning, our model achieves a 91.8% mAP and 0.90 f1-score, with an extension dataset, IndianFood20, adding 10 more classes.</p>
-                <div class="project-date">Date: May 2022</div>
-                <div class="project-links">
-                    <a href="https://arxiv.org/abs/2205.04841" target="_blank">Paper</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
+            </li>
+            
+            </ul>
+        
+    </main>
+    
+    </body>
 </html>
