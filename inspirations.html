@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspirations - Gadmin7</title>
+    
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; max-width: 900px; padding: 20px; color: #333; }
+        
+        /* Typography */
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+        .subtitle { color: #7f8c8d; font-size: 1.1em; margin-bottom: 40px; line-height: 1.4; }
+        h2 { color: #2c3e50; margin-top: 0; font-size: 1.3em; }
+        
+        .inspiration-list { padding: 0; list-style: none; }
+        
+        /* The "Interesting Person" Box */
+        .person-card { 
+            margin-bottom: 30px; 
+            padding: 25px;
+            border: 1px solid #eef2f3;
+            border-left: 5px solid #3498db; /* A blue accent on the side */
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        
+        .person-card:hover {
+            transform: translateX(10px);
+            background-color: #fcfdfd;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .why-meet {
+            background: #f9f9f9;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #444;
+            border-left: 3px solid #ddd;
+        }
+
+        .visit-link {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .visit-link:hover { text-decoration: underline; }
+
+        /* Navigation */
+        #main-nav { 
+            background-color: #f7f7f7; 
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px; 
+            margin-bottom: 30px;
+        }
+        #main-nav .nav-link { 
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        #main-nav .nav-link:hover { color: #3498db; }
+    </style>
+</head>
+<body>
+
+    <nav id="main-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
+        <a href="publications.html" class="nav-link">Publications</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="myblogs.html" class="nav-link">Blog</a>
+        <a href="courses.html" class="nav-link">Courses</a>
+        <a href="inspirations.html" class="nav-link">Inspirations</a>
+    </nav>
+
+    <main>
+        <h1>Digital Encounters</h1>
+        <p class="subtitle">
+            This is a collection of people I’ve never met, but whose digital homes made me pause. 
+            There is a specific kind of magic in how they present their thoughts and work sites that make me feel, 
+            <strong>"I need to meet this person at least once in my life."</strong>
+            <br><br>
+            <span style="font-size: 0.9em; opacity: 0.8;">
+                <em><strong>P.S.</strong> My searches are definitely biased and lean towards finding people in Tech and AI partly because I’m one of them!</em>
+            </span>
+        </p>
+
+        <ul class="inspiration-list">
+
+            <li class="person-card">
+                <div class="inspiration-tags">Philosophy • AI • Systems</div>
+                <h2>Louis Beaumont</h2>
+                <div class="why-meet">
+                    "This site is a stunning example of a 'Digital Garden' that leans into philosophy. It’s rare to find a developer site that feels so deeply reflective and structured around fundamental questions rather than just features."
+                </div>
+                <a href="https://louis030195.com/" class="visit-link" target="_blank">Explore Louis's Digital World →</a>
+            </li>
+
+            
+            <li class="person-card">
+                <div class="inspiration-tags">Ethics • Geospatial • Research</div>
+                <h2>Hailey Cheng</h2>
+                <div class="why-meet">
+                    "This space stands out for the way it balances technical rigor with a profound sense of ethical responsibility. The world maps and the visual storytelling reflect a personality that thinks deeply about global footprints and human impact."
+                </div>
+                <a href="https://haileycheng.com/" class="visit-link" target="_blank">Explore Hailey's Digital World →</a>
+            </li>
+
+            <li class="person-card">
+                <div class="inspiration-tags">AI Research • Philosophy • Knowledge Gardens</div>
+                <h2>Paras Chopra</h2>
+                <div class="why-meet">
+                    "This space is a masterclass in curiosity. The dedication to building a high-level AI research lab in India, paired with an extensive 'Knowledge Garden,' reflects a personality that refuses to separate technical ambition from the search for meaning. It’s a digital home that treats life and code as one big, fascinating experiment."
+                </div>
+                <a href="https://invertedpassion.com/" class="visit-link" target="_blank">Explore Paras's Digital World →</a>
+            </li>
+
+            
+            <li class="person-card" style="border-style: dashed; opacity: 0.7;">
+                <h2>Who's Next?</h2>
+                <div class="why-meet">
+                    Waiting for the next digital home that makes me pause...
+                </div>
+            </li>
+            
+        </ul>
+        <section class="shout-out"></section>
+            <h3>Hey, are you on this list?</h3>
+            <p>If you've stumbled upon this page and found your name here, thank you for the work you put into your digital home. It resonated with me. I'd love to actually have that cup of coffee or a quick chat sometime!</p>
+            <a href="mailto:gaurigst1970@gmail.com" class="contact-btn">Mail</a>
+        </section>
+    </main>
+    
+</body>
+</html>
