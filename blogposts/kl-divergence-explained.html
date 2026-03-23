@@ -195,19 +195,9 @@
         
     </article>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-HjrWf5o5l8f2+2L5f2Q1/YJ9V4E4K4K9Z4W8N4W6J9P5L9Q7G6K4W8N5L8G9K6W6K9W5J9G5" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" integrity="sha384-Fk8Y2I4p7YV+v2Z3q1Yp6P3Q5W4S9N7Y5K8W4G7S6L3P4Q2Y7W7H8G6K4W8N5L8G9K6W6K9W5J9G5" crossorigin="anonymous"
-        onload="renderMathInElement(document.body, {
-            delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false},
-                {left: '\\(', right: '\\)', display: false},
-                {left: '\\[', right: '\\]', display: true}
-            ],
-            // Enable CSS styling for the auto-rendered math
-            ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        });">
-    </script>
-
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+        </script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </body>
 </html>

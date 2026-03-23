@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kathak Bytes - Gadmin7</title>
+    <style>
+        :root {
+            --text: #2c3e50;
+            --muted: #5f6f80;
+            --line: #e8edf2;
+            --card: #ffffff;
+            --bg: #f8fafc;
+            --accent: #3498db;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .page-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .circle-bg {
+            position: absolute;
+            top: -140px;
+            left: -120px;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 40%, #dff0ff 0%, #eef6ff 45%, rgba(238, 246, 255, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #main-nav {
+            background-color: #f7f7f7;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 26px;
+            position: relative;
+            z-index: 2;
+        }
+
+        #main-nav .nav-link {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        #main-nav .nav-link:hover,
+        #main-nav .nav-link.active {
+            color: var(--accent);
+        }
+
+        .hero {
+            margin-bottom: 26px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-image {
+            border-radius: 14px;
+            overflow: hidden;
+            height: 320px;
+            width: 100%;
+            border: 1px solid var(--line);
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.08);
+            background: #dfeaf6;
+            margin-bottom: 16px;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-copy h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+        }
+
+        .hero-copy p {
+            margin: 0;
+            color: var(--muted);
+            max-width: 620px;
+        }
+
+        .entry-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .entry-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--accent);
+            border-radius: 10px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 6px rgba(44, 62, 80, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .entry-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(44, 62, 80, 0.1);
+        }
+
+        .entry-meta {
+            color: #6f7f90;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .entry-title {
+            margin: 0 0 8px;
+            font-size: 1.1rem;
+        }
+
+        .entry-card p {
+            margin: 0;
+        }
+
+        .entry-expand {
+            margin-top: 10px;
+            border-top: 1px dashed var(--line);
+            padding-top: 10px;
+        }
+
+        .entry-expand summary {
+            cursor: pointer;
+            color: var(--accent);
+            font-weight: bold;
+            outline: none;
+            list-style: none;
+        }
+
+        .entry-expand summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .entry-expand summary::before {
+            content: "Read full byte +";
+        }
+
+        .entry-expand[open] summary::before {
+            content: "Hide full byte -";
+        }
+
+        .entry-content {
+            margin-top: 10px;
+            color: #3a4b5d;
+        }
+
+        .entry-content p {
+            margin: 0 0 12px;
+        }
+
+        .entry-quote {
+            margin: 14px 0;
+            padding: 10px 14px;
+            border-left: 3px solid var(--accent);
+            background: #f4f9ff;
+            border-radius: 6px;
+            font-style: italic;
+        }
+
+        .entry-stanza {
+            margin: 0 0 12px;
+            color: #3a4b5d;
+        }
+
+        @media (max-width: 760px) {
+            .hero-image {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+        <div class="circle-bg" aria-hidden="true"></div>
+
+        <nav id="main-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
+            <a href="publications.html" class="nav-link">Publications</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="myblogs.html" class="nav-link">Blog</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="inspirations.html" class="nav-link">Inspirations</a>
+            <a href="kathak.html" class="nav-link active">Kathak</a>
+        </nav>
+
+        <main>
+            <section class="hero">
+                <div class="hero-image">
+                    <img src="images/hastmudra_beach.jpeg" alt="Kathak dance pose in motion">
+                </div>
+                <div class="hero-copy">
+                    <h1>Kathak Bytes</h1>
+                    <p>
+                        Small reflections from the world of Kathak where rhythm meets thought, and practice meets perspective.
+                    </p>
+                </div>
+            </section>
+
+            <ul class="entry-list">
+                <li class="entry-card">
+                    <div class="entry-meta">Byte 1 • Mind and Body</div>
+                    <h2 class="entry-title">Is This for Real?</h2>
+                    <p>Have you ever danced perfectly... only in your head?</p>
+                    <details class="entry-expand">
+                        <summary></summary>
+                        <article class="entry-content">
+                            <p>Have you ever danced perfectly... only in your head?</p>
+                            <p>You watch your guru. Or a friend. Somewhere along the way, a map gets created - clear, precise, almost convincing. You feel like you're doing exactly the same thing. In your mind, everything aligns.</p>
+                            <p>And then something interrupts that belief: maybe it's a passing glance in the mirror, maybe a photograph frozen in time, maybe someone else dancing next to you. Suddenly, there is a pause. Because what you felt and what you see are not the same.</p>
+
+                            <p class="entry-stanza">The posture is slightly off.<br>The arm does not quite extend the way you imagined.<br>The energy lands somewhere else.</p>
+
+                            <p>It's unsettling in a quiet way. The mind insists, "but I'm doing it right." The body replies, "not quite." Somewhere between the two lies the real practice.</p>
+                            <p>In Kathak, we learn so much by observing - absorbing from the guru, from others, from fleeting moments. But translating that into our own body is a different journey altogether. It's not imitation. It's negotiation.</p>
+
+                            <p class="entry-stanza">Between what you see,<br>what you think you're doing,<br>and what is actually happening.</p>
+
+                            <p>Slowly, you begin to rely less on the imagined version and more on awareness: the angle of your wrist, the weight in your step, whether you are truly arriving on the sam or only assuming you did.</p>
+                            <p>To reach one honest dha, you cannot depend on memory or assumption. You have to be present. Fully. And somewhere in that presence, something deeper begins to unfold.</p>
+                            <p>You're no longer just correcting movement - you're observing yourself without distortion, without imagination.</p>
+
+                            <p class="entry-stanza">Breath. Weight. Balance. Attention.<br>Again and again, you return.</p>
+
+                            <p>Without realizing it, practice turns into meditation: not the kind where you sit still, but the kind where every step demands awareness and every beat asks for honesty.</p>
+                            <p class="entry-quote">In Kathak, you may begin by learning to dance - but you stay because it quietly teaches you how to be present. And that goes far beyond dance.</p>
+                        </article>
+                    </details>
+                </li>
+                <li class="entry-card">
+                    <div class="entry-meta">Byte 2 • Practice Reflection</div>
+                    <h2 class="entry-title">The Tale of the Left Foot</h2>
+                    <p>Do both your feet sound the same? That question stayed with me longer than I expected.</p>
+                    <details class="entry-expand">
+                        <summary></summary>
+                        <div class="entry-content">
+                            <p>In the early days of learning Kathak, I remember obsessing over the chap - that crisp, sharp sound that feels like punctuation in rhythm. My right foot seemed to know the secret. My left foot... not so much.</p>
+                            <p>I tried everything. Adjusting the placement, pressing differently, noticing how the second toe creates that slight bulge near the front. I would watch my right foot carefully, almost like it belonged to someone else - what are you doing that I am not?</p>
+                            <p>My mam would guide us through footwork using different parts - panja for chap, adi for dham. Each sound had a personality, a weight, a story. But still, the left foot resisted becoming its mirror.</p>
+                            <p>And then, one day, someone said something that quietly shifted everything: asymmetry is beautiful.</p>
+                            <p>Even two tablas do not sound exactly the same - so why should your feet?</p>
+                            <p>It felt strange at first. Tabla itself is built on contrast, not duplication. And yet here I was, demanding perfect symmetry from my own body.</p>
+                            <p>Kathak is full of mathematical precision - patterns, cycles, symmetry - but this stood out. This was different. This was human.</p>
+                            <p>The frustration softened.</p>
+                            <p>Do I still love that perfectly sharp chap from both feet? Absolutely. But I have also learned to listen differently - to accept, even appreciate, the subtle difference.</p>
+                            <p>Somewhere along the way, the practice became less about correction and more about conversation.</p>
+                        </div>
+                    </details>
+                </li>
+
+                
+            </ul>
+        </main>
+    </div>
+</body>
+</html>
