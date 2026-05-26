@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Notes — Gadmin7</title>
+    <link rel="stylesheet" href="css/daily-notes.css">
+</head>
+<body>
+    <div class="page-wrap">
+        <nav id="main-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
+            <a href="publications.html" class="nav-link">Publications</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="myblogs.html" class="nav-link">Blog</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="inspirations.html" class="nav-link">Inspirations</a>
+            <a href="kathak.html" class="nav-link">Kathak</a>
+            <a href="daily-notes.html" class="nav-link active">Daily Notes</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>Daily Notes</h1>
+        </header>
+
+        <div class="day-toolbar">
+            <button type="button" class="btn" id="prev-day" aria-label="Previous day">←</button>
+            <button type="button" class="btn" id="today-btn">Today</button>
+            <button type="button" class="btn" id="next-day" aria-label="Next day">→</button>
+            <label for="day-picker">Day</label>
+            <input type="date" id="day-picker" aria-label="Pick a day">
+            <strong id="day-label">Today</strong>
+        </div>
+
+        <section class="capture-panel" aria-label="Rough capture for today">
+            <h2>Rough page — <span id="day-label-inline">today</span></h2>
+            <p class="capture-hint">
+                Type, paste, or use Speak. Multiple paragraphs separated by a blank line become separate thoughts.
+                <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Enter</kbd> to capture.
+            </p>
+            <textarea id="rough-input" placeholder="What came to mind today? Fragments, links, half-ideas — dump them here…" autofocus></textarea>
+            <div class="capture-actions">
+                <button type="button" class="btn btn-primary" id="capture-btn">Capture thought</button>
+                <button type="button" class="btn" id="voice-btn">Speak</button>
+                <button type="button" class="btn" id="clear-rough">Clear</button>
+                <p class="voice-status" id="voice-status" aria-live="polite"></p>
+                <div class="form-pick" role="group" aria-label="How to classify this capture">
+                    <label><input type="radio" name="form-pick" value="auto" checked> Auto</label>
+                    <label><input type="radio" name="form-pick" value="short"> Short (tweet)</label>
+                    <label><input type="radio" name="form-pick" value="long"> Long (essay)</label>
+                </div>
+            </div>
+        </section>
+
+        <div class="feeds-grid">
+            <section class="feed-column" aria-label="Short form feed">
+                <h2>Short trail</h2>
+                <p class="feed-subtitle">Tweet-sized bites — a chronological trail of the day.</p>
+                <ul class="feed-list empty" id="short-feed"></ul>
+            </section>
+
+            <section class="feed-column" aria-label="Long form feed">
+                <h2>Long form</h2>
+                <p class="feed-subtitle">Essay-style posts — LessWrong-ish layout for deeper thoughts.</p>
+                <ul class="feed-list empty" id="long-feed"></ul>
+            </section>
+        </div>
+
+        <details class="sheet-settings" id="sheet-settings">
+            <summary>Google Sheet sync (short notes only)</summary>
+            <p class="sheet-hint">
+                Uses a personal Google Sheet + Apps Script. Copy
+                <code>scripts/google-apps-script/daily-notes-short.gs</code>
+                into your sheet’s script editor, deploy as web app, then paste URL and token below.
+            </p>
+            <label class="sheet-row">
+                <input type="checkbox" id="sheet-enabled">
+                Enable sync for short trail
+            </label>
+            <label class="sheet-row">
+                Web app URL
+                <input type="url" id="sheet-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+            </label>
+            <label class="sheet-row">
+                Sync token
+                <input type="password" id="sheet-token" placeholder="Same as SYNC_TOKEN in Apps Script" autocomplete="off">
+            </label>
+            <div class="sheet-actions">
+                <button type="button" class="btn" id="sheet-save">Save settings</button>
+                <button type="button" class="btn" id="sheet-test">Test connection</button>
+            </div>
+            <p class="sheet-status" id="sheet-status" aria-live="polite"></p>
+        </details>
+
+        <div class="data-tools">
+            <span>Stored locally in your browser. Export to back up.</span>
+            <button type="button" class="btn" id="export-btn">Export JSON</button>
+            <button type="button" class="btn" id="import-btn">Import JSON</button>
+            <input type="file" id="import-file" accept="application/json" hidden>
+        </div>
+    </div>
+
+    <div class="overlay hidden" id="modal-overlay" role="dialog" aria-modal="true">
+        <div class="modal">
+            <h3 id="modal-title">Edit</h3>
+            <textarea id="modal-text"></textarea>
+            <div class="modal-actions">
+                <button type="button" class="btn" id="modal-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-confirm">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/daily-notes-sheet.js"></script>
+    <script src="js/daily-notes.js"></script>
+</body>
+</html>

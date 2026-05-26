@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-26T00:00:00.000Z",
+  "links": [
+    {
+      "id": "lesswrong-embedded-agents",
+      "url": "https://www.lesswrong.com/posts/i3BTagvt3HbPMx6PN/embedded-agents",
+      "title": "Embedded Agents",
+      "description": "LessWrong sequence on agents as embedded in the world.",
+      "category": "article",
+      "tags": ["alignment", "agents"],
+      "status": "to-read",
+      "addedAt": "2026-05-20T10:00:00.000Z",
+      "source": "recommendation",
+      "featured": true
+    },
+    {
+      "id": "word2vec-negative-sampling",
+      "url": "https://arxiv.org/abs/1301.3781",
+      "title": "Efficient Estimation of Word Representations in Vector Space",
+      "description": "Word2Vec paper — useful reference for SGNS geometry write-up.",
+      "category": "paper",
+      "tags": ["nlp", "embeddings"],
+      "status": "done",
+      "addedAt": "2026-05-15T14:30:00.000Z",
+      "notes": "Cited in blog post on Word2Vec geometry."
+    },
+    {
+      "id": "anthropic-model-card-tool-use",
+      "url": "https://www.anthropic.com/research",
+      "title": "Anthropic Research",
+      "description": "Placeholder — replace URL with a specific paper or post you save.",
+      "category": "other",
+      "tags": ["alignment", "safety"],
+      "status": "to-read",
+      "addedAt": "2026-05-26T00:00:00.000Z",
+      "archived": false
+    }
+  ]
+}

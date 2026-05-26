@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Links — Gadmin7</title>
+    <link rel="stylesheet" href="css/links.css">
+</head>
+<body>
+    <div class="page-wrap">
+        <nav id="main-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
+            <a href="publications.html" class="nav-link">Publications</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="myblogs.html" class="nav-link">Blog</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="inspirations.html" class="nav-link">Inspirations</a>
+            <a href="kathak.html" class="nav-link">Kathak</a>
+            <a href="links.html" class="nav-link active">Links</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>Links</h1>
+        </header>
+        <p class="data-source" id="data-source-note">Loading…</p>
+
+        <div class="filters">
+            <input type="search" id="search" placeholder="Search title, tags, notes…" aria-label="Search links">
+            <select id="filter-category" aria-label="Filter by category">
+                <option value="">All categories</option>
+                <option value="article">Article</option>
+                <option value="paper">Paper</option>
+                <option value="video">Video</option>
+                <option value="tool">Tool</option>
+                <option value="book">Book</option>
+                <option value="thread">Thread</option>
+                <option value="other">Other</option>
+            </select>
+            <select id="filter-status" aria-label="Filter by status">
+                <option value="">All statuses</option>
+                <option value="to-read">To read</option>
+                <option value="reading">Reading</option>
+                <option value="done">Done</option>
+                <option value="archive">Archive</option>
+            </select>
+            <select id="filter-tag" aria-label="Filter by tag">
+                <option value="">All tags</option>
+            </select>
+            <label>
+                <input type="checkbox" id="show-archived">
+                Show archived
+            </label>
+        </div>
+
+        <p id="loading" class="empty-state">Loading links…</p>
+        <p id="error-state" class="error-state hidden" role="alert"></p>
+        <p id="empty-state" class="empty-state hidden">No links match these filters.</p>
+        <ul class="link-list hidden" id="link-list"></ul>
+    </div>
+
+    <script src="js/links.js"></script>
+</body>
+</html>
