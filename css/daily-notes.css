@@ -242,7 +242,7 @@ body {
 }
 
 .feed-list.empty::after {
-    content: "Nothing here yet — capture a thought above.";
+    content: "Nothing here yet. Capture a thought above.";
     display: block;
     padding: 24px;
     text-align: center;
@@ -253,7 +253,7 @@ body {
     background: var(--card);
 }
 
-/* Short form — tweet trail */
+/* Short form - tweet trail */
 .entry-short {
     background: var(--tweet-bg);
     border: 1px solid var(--line);
@@ -278,7 +278,7 @@ body {
     margin-top: 8px;
 }
 
-/* Long form — LessWrong-ish essay */
+/* Long form - LessWrong-ish essay */
 .entry-long {
     background: var(--essay-bg);
     border: 1px solid #e8e4dc;

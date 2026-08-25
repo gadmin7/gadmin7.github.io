@@ -115,7 +115,7 @@ window.DailyNotesSheet = (function () {
             setStatus("Testing connection…", "");
             try {
                 await testConnection();
-                setStatus("Connected — sheet is ready.", "ok");
+                setStatus("Connected. Sheet is ready.", "ok");
             } catch (e) {
                 setStatus(`Connection failed: ${e.message}`, "error");
             }

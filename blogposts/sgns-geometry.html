@@ -85,7 +85,7 @@
     <div class="math-block">
       $$L = \log \sigma({v'_{w_O}}^\top v_{w_I}) + \sum_{i=1}^{K} \mathbb{E}_{w_i \sim P_n(w)} \left[ \log \sigma(-{v'_{w_i}}^\top v_{w_I}) \right] \tag{3}$$
     </div>
-    <p>Here, negative samples $w_i$ are drawn from a noise distribution $P_n(w)$ (typically $U(w)^{3/4}$). This trick reduced per-update complexity from $O(|V|)$ to $O(K)$—a breakthrough for scalability.</p>
+    <p>Here, negative samples $w_i$ are drawn from a noise distribution $P_n(w)$ (typically $U(w)^{3/4}$). This trick reduced per-update complexity from $O(|V|)$ to $O(K)$, a breakthrough for scalability.</p>
 
     <h3>The Binary Decision Layer: Two Sets of Vectors</h3>
     <p>SGNS learns two distinct embedding matrices: <strong>input vectors $v_w$</strong> (words as predictors) and <strong>output vectors $v'_w$</strong> (words as predicted contexts). Most downstream tasks use the input embeddings $v_w$.</p>
@@ -95,7 +95,7 @@
 
   <!-- PART II -->
   <section id="part-2">
-    <h2>📐 Part II: The Unintended Consequence — “The Narrow Cone”</h2>
+    <h2>📐 Part II: The Unintended Consequence (“The Narrow Cone”)</h2>
     <p>In 2017, <a href="https://aclanthology.org/D17-1308/" target="_blank">Mimno & Thompson</a> revealed a geometric anomaly: SGNS embeddings often occupy a <strong>narrow cone</strong> in space rather than an isotropic (uniform) distribution.</p>
 
     <div class="definition-box">
@@ -120,7 +120,7 @@
         word and context vectors. (Mimno & Thompson, 2017).</figcaption>
     </figure>
 
-    <p>Because vectors share a common global bias direction, cosine similarity becomes less discriminative—it measures small angular deviations rather than large semantic ones. However, as Mimno & Thompson note, SGNS still performs well on many tasks despite this anisotropy. The geometry is thus <em>distorted but functional</em>, not “broken.”</p>
+    <p>Because vectors share a common global bias direction, cosine similarity becomes less discriminative: it measures small angular deviations rather than large semantic ones. However, as Mimno & Thompson note, SGNS still performs well on many tasks despite this anisotropy. The geometry is thus <em>distorted but functional</em>, not “broken.”</p>
     <h3>Why Geometry Matters</h3>
     <p>The geometry of an embedding space directly determines how similarity, clustering, and analogy operations behave. 
        In an isotropic space, cosine similarity captures meaningful relational differences because vectors are spread evenly across directions. 
@@ -138,14 +138,14 @@
 
   <hr> 
   <section id="bridge">
-    <p>The geometry is thus <em>distorted but functional</em>, not “broken” suggests the optimization objective might be encouraging an easier-to-satisfy configuration than the one we intended. This geometric distortion raises deeper questions: Why does an efficient optimization trick yield such a skewed representation—and what does that say about how AI systems pursue proxy goals?</p>
+    <p>The geometry is thus <em>distorted but functional</em>, not “broken” suggests the optimization objective might be encouraging an easier-to-satisfy configuration than the one we intended. This geometric distortion raises deeper questions: Why does an efficient optimization trick yield such a skewed representation, and what does that say about how AI systems pursue proxy goals?</p>
   </section>
 
 
   <!-- PART III -->
   <section id="part-3">
     <h2>🧭 Part III: An Analogy to Outer Misalignment (Reward Misspecification)</h2>
-    <p>The SGNS story serves as an <strong>analogy</strong>—not a direct equivalence—to <strong>outer misalignment</strong> in AI safety: a system optimizes the literal objective but diverges from the intended goal.</p>
+    <p>The SGNS story serves as an <strong>analogy</strong>, not a direct equivalence, to <strong>outer misalignment</strong> in AI safety: a system optimizes the literal objective but diverges from the intended goal.</p>
 
     <table>
       <thead><tr><th>Concept</th><th>Applied to SGNS</th></tr></thead>
@@ -173,7 +173,7 @@
     <h3>2. Interpretability and Asymmetry</h3>
     <p>SGNS produces two asymmetric spaces ($v_w$, $v'_w$), showing that efficiency-driven optimization can warp internal representations. Understanding such internal “geometry drift” is crucial for interpretability and reliable model design.</p>
 
-    <p>The SGNS geometry reminds us that computational shortcuts can reshape representation space itself—a useful cautionary story for both NLP and broader AI systems.</p>
+    <p>The SGNS geometry reminds us that computational shortcuts can reshape representation space itself, a useful cautionary story for both NLP and broader AI systems.</p>
   </section>
 
   <hr>

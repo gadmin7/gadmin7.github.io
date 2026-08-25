@@ -131,7 +131,7 @@
             el.innerHTML = `Loaded from <a href="${REMOTE_URL}" target="_blank" rel="noopener">gadmin7-links</a>${updated}`;
         } else {
             el.textContent =
-                "Using local fallback — push gadmin7-links to GitHub for live sync.";
+                "Using local fallback: push gadmin7-links to GitHub for live sync.";
         }
     }
 

@@ -400,7 +400,7 @@
         });
         $$(".append-btn").forEach((btn) => {
             btn.onclick = () =>
-                openModal("append", btn.dataset.id, "Append to this thought", "Add more — saved as a new timestamped version…");
+                openModal("append", btn.dataset.id, "Append to this thought", "Add more: saved as a new timestamped version…");
         });
         $$(".edit-btn").forEach((btn) => {
             btn.onclick = () =>
@@ -523,7 +523,7 @@
                 render();
                 alert("Notes imported successfully.");
             } catch {
-                alert("Could not import — invalid JSON file.");
+                alert("Could not import: invalid JSON file.");
             }
         };
         reader.readAsText(file);
@@ -543,7 +543,7 @@
         });
 
         roughInput.addEventListener("paste", () => {
-            voiceStatus.textContent = "Pasted — hit Capture or ⌘/Ctrl+Enter";
+            voiceStatus.textContent = "Pasted. Hit Capture or ⌘/Ctrl+Enter";
             setTimeout(() => {
                 if (!listening) voiceStatus.textContent = "";
             }, 3000);

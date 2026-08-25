@@ -59,7 +59,7 @@
 
         <div class="summary-box">
             <h3>Summary</h3>
-            <p>This post unpacks how information theory concepts — **entropy**, **cross-entropy**, and **Kullback-Leibler (KL) divergence**, connect to machine learning.</p>
+            <p>This post unpacks how information theory concepts like **entropy**, **cross-entropy**, and **Kullback-Leibler (KL) divergence** connect to machine learning.</p>
             <p>We’ll explore their intuition, why KL is **asymmetric**, why forward KL underpins classification loss, and how maximizing likelihood links to minimizing cross-entropy. An accompanying interactive demo helps build visual and numerical intuition.</p>
         </div>
 
@@ -77,7 +77,7 @@
                 <li>**High entropy** → uncertain outcomes (uniform distribution)</li>
                 <li>**Low entropy** → confident outcomes (peaked distribution)</li>
             </ul>
-            <p>Entropy measures the **expected surprise** — how much information we gain when we learn the actual outcome.</p>
+            <p>Entropy measures the **expected surprise**: how much information we gain when we learn the actual outcome.</p>
         </section>
 
         <section id="section-2">
@@ -113,13 +113,13 @@
             
             <ul>
                 <li>$D_{KL}(p \Vert q) = 0$ only if $p = q$</li>
-                <li>It’s **not symmetric** — $D_{KL}(p \Vert q) \neq D_{KL}(q \Vert p)$</li>
+                <li>It’s **not symmetric**: $D_{KL}(p \Vert q) \neq D_{KL}(q \Vert p)$</li>
             </ul>
 
             <h3>Why Asymmetry Matters</h3>
             <ul>
-                <li>**Forward KL ($D_{KL}(p \Vert q)$):** Penalizes missing any region where $p$ assigns probability mass — it **covers all modes**.</li>
-                <li>**Reverse KL ($D_{KL}(q \Vert p)$):** Penalizes assigning probability where $p$ has none — it **collapses to dominant modes**.</li>
+                <li>**Forward KL ($D_{KL}(p \Vert q)$):** Penalizes missing any region where $p$ assigns probability mass; it **covers all modes**.</li>
+                <li>**Reverse KL ($D_{KL}(q \Vert p)$):** Penalizes assigning probability where $p$ has none; it **collapses to dominant modes**.</li>
             </ul>
             <p>This asymmetry explains different behaviors in optimization and generative modeling (e.g., mode covering vs. mode seeking).</p>
         </section>
@@ -128,7 +128,7 @@
             <h2>4. Why Forward KL for Classification</h2>
             <p>In supervised classification:</p>
             <ul>
-                <li>The data gives us *true* labels — effectively a one-hot distribution $p(x)$.</li>
+                <li>The data gives us *true* labels: effectively a one-hot distribution $p(x)$.</li>
                 <li>The model predicts a softmax output $q(x)$.</li>
             </ul>
             <p>For a one-hot label where $p(x) = 1$ for the correct class $x_c$:</p>
@@ -139,7 +139,7 @@
             
             <p>*(Cross-entropy loss reduces to the negative log probability of the correct class.)*</p>
             
-            <p>That’s the familiar **cross-entropy loss** used in training neural networks. We minimize the divergence from the *true* data distribution to our model’s predictions — hence, **forward KL**.</p>
+            <p>That’s the familiar **cross-entropy loss** used in training neural networks. We minimize the divergence from the *true* data distribution to our model’s predictions, hence **forward KL**.</p>
         </section>
 
         <section id="section-5">
@@ -161,7 +161,7 @@
             </div>
             
             <p>*(Maximizing the log-likelihood of the data equals minimizing cross-entropy between the data distribution and the model.)*</p>
-            <p>So **cross-entropy loss** is not arbitrary — it emerges directly from the statistical principle of likelihood maximization.</p>
+            <p>So **cross-entropy loss** is not arbitrary; it emerges directly from the statistical principle of likelihood maximization.</p>
         </section>
 
         <section id="section-7">
@@ -178,7 +178,7 @@
             <ul>
                 <li>**Entropy** measures uncertainty within one distribution.</li>
                 <li>**Cross-Entropy** compares a true distribution and a model distribution.</li>
-                <li>**KL Divergence** quantifies their disagreement — and its direction (forward vs. reverse) changes optimization behavior.</li>
+                <li>**KL Divergence** quantifies their disagreement, and its direction (forward vs. reverse) changes optimization behavior.</li>
                 <li>**Forward KL = Cross-Entropy − Entropy**, hence used in classification.</li>
                 <li>**Maximum Likelihood = Cross-Entropy Minimization.**</li>
             </ul>
