@@ -9,30 +9,29 @@
         body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; max-width: 900px; padding: 20px; }
         h1, h2, h3 { color: #333; }
         h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .post-item { 
-            border: 1px solid #ddd; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border-radius: 5px; 
-            transition: box-shadow 0.3s ease;
+        .post-item {
+            margin-bottom: 28px;
         }
-        .post-item:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .post-item a { 
-            font-size: 1.4em; 
-            color: #007bff; 
-            text-decoration: none; 
-            font-weight: bold; 
-            display: block; 
-            margin-bottom: 5px;
+        .post-item a {
+            font-size: 1.05em;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: normal;
+            display: block;
+            margin-bottom: 4px;
         }
         .post-item a:hover {
             text-decoration: underline;
         }
         .post-meta {
-            color: #666;
-            font-size: 0.9em;
+            color: #777;
+            font-size: 0.88em;
+            margin-bottom: 4px;
+        }
+        .post-item p:not(.post-meta) {
+            color: #555;
+            font-size: 0.95em;
+            margin: 0;
         }
         #main-nav { 
             /* New Styles for Grey Background */
@@ -62,24 +61,20 @@
     <nav id="main-nav">
         <a href="index.html" target="_blank" class="nav-link">Home</a>
         <a href="data/GauriToshniwalResume.pdf" target="_blank" class="nav-link">Resume</a>
-        <a href="publications.html" class="nav-link">Publications</a>
+        <a href="publications.html" class="nav-link">Research</a>
         <a href="projects.html" class="nav-link">Projects</a>
         <a href="myblogs.html" class="nav-link">Blog</a>
-        <a href="courses.html" class="nav-link">Courses</a>
         <a href="inspirations.html" class="nav-link">Inspirations</a>
+        <a href="kathak.html" class="nav-link">Kathak</a>
     </nav>
 
     <main>
-        <h1>✍️ My Technical Insights & Blog</h1>
-        
+        <h1>Blog</h1>
+
         <section id="post-list">
-            <h2>Latest Articles</h2>
-            
             <div class="post-item">
                 <a href="./blogposts/sgns-geometry.html">The Billion-Word Hack: How Word2Vec’s Speed Secret Shaped Its Geometry</a>
-                <p class="post-meta">
-                    Date: November 9, 2025 | Topic: NLP, Embeddings, AI Safety
-                </p>
+                <p class="post-meta">November 9, 2025 &middot; NLP, Embeddings, AI Safety</p>
                 <p>An exploration into how the computational optimization that made Word2Vec possible resulted in a strange, geometrically biased vector space, and the connection to the concept of 'Outer Misalignment'.</p>
             </div>
             
