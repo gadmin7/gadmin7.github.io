@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A from-scratch tutorial: build a beep, a tune, instruments, drums and reverb with NumPy, ending with a small band playing Happy Birthday.">
+<title>Play Happy Birthday with NumPy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one 680px reading column; figures widen to 980px; every figure pairs a picture with the actual numbers behind it; instruments keep one color throughout */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --ink:#1A1F2F; --muted:#5B6378; --rule:#D8DCE6; --code-bg:#E8EBF2;
+  --pluck:#DB4B35; --glock:#B87D00; --pad:#7552D1; --bass:#13807A; --drums:#4B5573; --hb:#CF3A7A; --neg:#2F6FD6;
+  --c-kw:#7552D1; --c-num:#B4532A; --c-str:#13807A; --c-com:#7D8499; --c-fn:#1F5FBF;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10131B; --surface:#181C27; --ink:#E7EAF3; --muted:#99A1B7; --rule:#2A2F3F; --code-bg:#1D2231;
+  --pluck:#FF7A62; --glock:#F0B43A; --pad:#A58CFF; --bass:#3DC6BC; --drums:#9AA6C6; --hb:#FF6FA9; --neg:#6FA2FF;
+  --c-kw:#B9A3FF; --c-num:#FFA077; --c-str:#5FD3C9; --c-com:#7C849C; --c-fn:#7FB2FF;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10131B; --surface:#181C27; --ink:#E7EAF3; --muted:#99A1B7; --rule:#2A2F3F; --code-bg:#1D2231;
+  --pluck:#FF7A62; --glock:#F0B43A; --pad:#A58CFF; --bass:#3DC6BC; --drums:#9AA6C6; --hb:#FF6FA9; --neg:#6FA2FF;
+  --c-kw:#B9A3FF; --c-num:#FFA077; --c-str:#5FD3C9; --c-com:#7C849C; --c-fn:#7FB2FF;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.65;padding-inline:20px;padding-block:0 80px}
+.col{max-width:680px;margin-inline:auto}
+.wide{max-width:980px;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.08;margin:0}
+h1{font-size:clamp(40px,7.4vw,76px);font-weight:800;letter-spacing:-.02em}
+h1 .np{color:var(--hb)}
+h2{font-size:clamp(28px,4vw,36px);font-weight:700;letter-spacing:-.01em}
+h3{font-size:20px;font-weight:700}
+p{margin:0}
+a{color:var(--hb);text-underline-offset:3px}
+code{font-family:var(--mono);font-size:.82em;background:var(--code-bg);padding:.1em .35em;border-radius:5px}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.eyebrow code{background:none;padding:0;color:var(--ink);font-size:13px;text-transform:none;letter-spacing:0}
+
+.hero{padding-block:72px 28px;display:grid;gap:22px}
+.dek{font-size:21px;line-height:1.55;color:var(--muted);max-width:640px}
+.scope-wrap{position:relative;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-block:8px}
+#scope{display:block;width:100%;height:210px}
+.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px}
+.status{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.voices{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.voices span{display:inline-flex;align-items:center;gap:7px}
+.voices i{width:18px;height:3px;border-radius:2px;background:var(--c)}
+
+article{display:grid;gap:64px;padding-top:36px}
+section{display:grid;gap:22px}
+section > .col{display:grid;gap:18px}
+.lede{font-size:20px}
+
+pre{margin:0;background:var(--code-bg);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.6;tab-size:4}
+pre code{background:none;padding:0;font-size:inherit;border-radius:0}
+.kw{color:var(--c-kw);font-weight:600}.num{color:var(--c-num)}.str{color:var(--c-str)}.com{color:var(--c-com);font-style:italic}.fn{color:var(--c-fn)}
+
+figure{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:16px;padding:18px;display:grid;gap:14px;min-width:0}
+figcaption{font-size:15px;line-height:1.5;color:var(--muted)}
+canvas{display:block;width:100%;max-width:100%}
+canvas.hov{touch-action:pan-y;cursor:crosshair}
+.c-strip{height:30px}.c-sm{height:120px}.c-md{height:170px}.c-lg{height:220px}.c-xl{height:250px}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px}
+.ctl{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.ctl input[type=range]{width:150px;accent-color:var(--c,var(--ink))}
+.ctl output{color:var(--ink);font-variant-numeric:tabular-nums;min-width:5.5ch}
+.readout{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.readout b{color:var(--ink);font-weight:600}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row2 > *{min-width:0}
+.panel-label{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+
+/* the numbers */
+.numbers{display:grid;gap:8px;min-width:0;border-top:1px dashed var(--rule);padding-top:14px}
+.shape{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.shape b{color:var(--ink);font-weight:600;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+.nums-wrap{overflow-x:auto;min-width:0}
+table.nums{border-collapse:collapse;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.nums th,table.nums td{padding:5px 10px;text-align:right;border-bottom:1px solid var(--rule)}
+table.nums thead th{color:var(--muted);font-weight:400}
+table.nums tbody th{text-align:left;font-weight:600;color:var(--ink);position:sticky;left:0;background:var(--surface)}
+table.nums thead th:first-child{text-align:left;position:sticky;left:0;background:var(--surface)}
+table.nums .hi{background:color-mix(in srgb,var(--hb) 16%,var(--surface));color:var(--ink)}
+table.nums tr.total th,table.nums tr.total td{border-top:2px solid var(--ink);font-weight:600}
+table.nums td.dim{color:var(--muted)}
+.hint{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+.btn{--c:var(--ink);appearance:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:10px;background:var(--c);color:var(--bg);font-family:var(--display);font-weight:700;font-size:15px;padding:10px 18px 10px 15px;border-radius:999px;transition:transform .12s ease, filter .12s ease}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible{outline:3px solid var(--c);outline-offset:3px}
+.btn::before{content:"";width:0;height:0;border-left:10px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.btn.playing::before{width:10px;height:10px;border:0;background:currentColor;border-radius:2px}
+.btn.big{font-size:18px;padding:14px 26px 14px 22px}
+.btn.ghost{background:transparent;color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c)}
+
+.kb{position:relative;height:130px;user-select:none}
+.key{position:absolute;top:0;border:1px solid var(--rule);cursor:pointer;padding:0;font:inherit}
+.key.w{height:100%;background:var(--surface);border-radius:0 0 7px 7px;z-index:1}
+.key.b{height:60%;background:var(--ink);border-color:var(--ink);border-radius:0 0 5px 5px;z-index:2}
+.key.on.w{background:color-mix(in srgb,var(--hb) 28%,var(--surface))}
+.key.on.b{background:var(--hb);border-color:var(--hb)}
+.key:focus-visible{outline:3px solid var(--hb);outline-offset:-3px}
+.key span{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+.drums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.drum{border:1px solid var(--rule);border-radius:12px;padding:12px;display:grid;gap:10px;align-content:start;min-width:0}
+.drum .btn{justify-self:start;font-size:13px;padding:7px 14px 7px 12px}
+.drum h3{font-size:16px}
+
+#timeline{height:380px;cursor:pointer;touch-action:pan-y}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:4px;border-radius:2px;background:var(--c)}
+.tl-info{font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--muted);min-height:3.4em;overflow-wrap:anywhere}
+.tl-info b{color:var(--ink)}
+.tl-info code{font-size:13px}
+
+footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--rule);font-size:15px;color:var(--muted)}
+
+@media (max-width:720px){
+  body{font-size:17px}
+  .row2{grid-template-columns:1fr}
+  .drums{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #timeline{height:330px}
+  .ctl input[type=range]{width:120px}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+
+.btn.plain::before{display:none}
+.btn.plain{padding-left:18px;justify-self:start}
+details.full{display:grid;gap:12px}
+details.full summary{cursor:pointer;font-family:var(--display);font-weight:700;font-size:17px;padding:10px 0}
+details.full[open] summary{margin-bottom:10px}
+details.full pre{margin-top:12px;max-height:70vh;overflow:auto}
+
+html,body{margin:0}
+.site-nav{max-width:680px;margin-inline:auto;padding-top:22px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.site-nav a{color:var(--muted);text-decoration:none}
+.site-nav a:hover{color:var(--hb);text-decoration:underline}
+.byline{font-family:var(--mono);font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="../index.html">← Portfolio Home</a> | <a href="../myblogs.html">Blog</a>
+</nav>
+<header class="hero col">
+  <p class="eyebrow">A from-scratch tutorial</p>
+  <h1>Play Happy Birthday with <span class="np">NumPy</span></h1>
+  <p class="byline">Gauri Toshniwal &middot; October 11, 2026</p>
+  <p class="dek">You don't need an instrument, a recording or an audio library to make music. A sound is a list of numbers, and NumPy is very good at lists of numbers. We'll start with a single beep and finish with a small band playing Happy Birthday. Every figure plays its sound, draws it, and shows the numbers behind it.</p>
+</header>
+<div class="wide scope-wrap"><canvas id="scope" aria-label="Waveform display"></canvas></div>
+<div class="col hero-actions">
+  <button class="btn big" id="playSong" style="--c:var(--hb)">Play what we'll build</button>
+  <span class="status" id="songStatus">25 seconds, computed in your browser from the same math</span>
+</div>
+
+<article>
+<section id="intro"><div class="col">
+  <p class="lede">This is where we're heading: a short band intro with a plucked guitar-like part, bass and drums, and then Happy Birthday played on bells. It takes about 200 lines of Python, and we'll write all of them together.</p>
+  <p><strong>What you need.</strong> Python with two packages: NumPy for the math, and SciPy to save sound files and to filter noise for the drums. Install them with <code>pip install numpy scipy</code>. You don't need to know any music theory or signal processing. If you can read a <code>for</code> loop, you can follow along.</p>
+  <p><strong>How to read the figures.</strong> Each one has a play button, a graph, and a <strong>numbers panel</strong> with the array's shape and some of its values. Move your pointer over a graph (or tap it on a phone) and the table jumps to the samples under your finger.</p>
+  <p>The idea for this post came from the <a href="https://www-users.cse.umn.edu/~rogness/math1155/soundwaves/" target="_blank" rel="noopener">Sound Waves page</a> of the University of Minnesota's Math 1155 course, which explains how frequency, amplitude and adding waves relate to what we hear. Here we turn those three ideas into a song.</p>
+  <div class="voices" aria-label="Instrument colors">
+    <span style="--c:var(--pluck)"><i></i>pluck</span>
+    <span style="--c:var(--glock)"><i></i>bell</span>
+    <span style="--c:var(--pad)"><i></i>pad</span>
+    <span style="--c:var(--bass)"><i></i>bass</span>
+    <span style="--c:var(--drums)"><i></i>drums</span>
+  </div>
+</div></section>
+
+<!-- 1 -->
+<section id="numbers">
+  <div class="col">
+    <p class="eyebrow">Step 1 · your first sound</p>
+    <h2>Sound is a list of numbers</h2>
+    <p>A speaker makes sound by pushing a cone in and out. Write down where the cone is 44,100 times a second and you have a list of numbers. That list <em>is</em> the sound, and a WAV file stores exactly that. So making music with NumPy comes down to one job: computing the right numbers.</p>
+    <p>The simplest list is a sine wave. Its <strong>frequency</strong>, the number of full wiggles per second, is the pitch you hear. Its <strong>amplitude</strong>, how tall the wiggles are, is how loud it is. Here is a complete program that makes one second of a beep and saves it:</p>
+<pre><code class="py">import numpy as np
+from scipy.io import wavfile
+
+SR = 44100                                   # samples per second
+
+
+def save(name, x):
+    wavfile.write(name, SR, (x * 32767).astype(np.int16))
+
+
+t = np.arange(SR) / SR                       # the time of every sample in one second
+x = 0.3 * np.sin(2 * np.pi * 440 * t)        # 440 wiggles per second, at 30% volume
+save('beep.wav', x)</code></pre>
+    <p>Run it and open <code>beep.wav</code>. Three things happened. <code>np.arange(SR) / SR</code> made 44,100 time stamps from 0 to just under 1 second. <code>np.sin</code> turned every time stamp into a height between −1 and +1, and <code>0.3</code> turned the volume down. <code>save</code> scaled the numbers to whole numbers between −32,767 and 32,767, which is the format sound files use.</p>
+    <p><code>t</code> and <code>x</code> are one-dimensional arrays with the same length, one entry per sample. One second of sound has shape <code>(44100,)</code>. Below, the same numbers appear three ways: as a graph, as a strip of colors, and as a table.</p>
+  </div>
+  <figure class="wide">
+    <canvas id="c1" class="c-md hov"></canvas>
+    <div><div class="panel-label">The same array as colors: <span style="color:var(--hb)">positive</span> · <span style="color:var(--neg)">negative</span></div><canvas id="c1h" class="c-strip hov"></canvas></div>
+    <div class="controls">
+      <button class="btn" id="p1">Play 1 second</button>
+      <label class="ctl" for="freq">frequency <input type="range" id="freq" min="110" max="880" step="1" value="440"><output id="freqOut">440 Hz</output></label>
+      <span class="readout" id="r1"></span>
+    </div>
+    <div class="numbers">
+      <div class="shape" id="s1"></div>
+      <div class="nums-wrap" id="t1"></div>
+      <div class="hint">Point at the graph to move the highlighted sample.</div>
+    </div>
+    <figcaption>The first five milliseconds of the beep. Each dot is one number in the array. Drag the slider and the wiggles bunch up or spread out. That is pitch. Listen for the small click at the start and end; step 4 fixes it.</figcaption>
+  </figure>
+</section>
+
+<!-- 2 -->
+<section id="notes">
+  <div class="col">
+    <p class="eyebrow">Step 2 · <code>hz()</code></p>
+    <h2>Notes are numbers too</h2>
+    <p>To play a tune we need the frequency of every note. Luckily there's a standard way to number notes, called MIDI. Middle C is 60, and each key on a piano, black or white, adds 1. The A above middle C is 69, and it's tuned to 440 Hz. One small function turns any note number into a frequency:</p>
+<pre><code class="py">def hz(note):
+    return 440 * 2 ** ((note - 69) / 12)</code></pre>
+    <p>Each step up multiplies the frequency by the twelfth root of 2, about 1.0595. Twelve steps multiply it by exactly 2, which musicians call an octave. From now on we can write music as plain integers. A chord is just a list: <code>[62, 66, 69]</code> is D major.</p>
+  </div>
+  <figure class="wide">
+    <div class="kb" id="kb" role="group" aria-label="Piano keyboard from A3 to A5"></div>
+    <canvas id="c2" class="c-sm"></canvas>
+    <div class="readout" id="r2"></div>
+    <div class="numbers">
+      <div class="shape">How <code>hz(note)</code> works, step by step, for the notes around your key</div>
+      <div class="nums-wrap" id="t2"></div>
+    </div>
+    <figcaption>Tap a key. The solid wave is your note and the faint one is A 440 for comparison. In the table, follow a column down: the note number becomes a power of 2, which becomes a frequency.</figcaption>
+  </figure>
+</section>
+
+<!-- 3 -->
+<section id="tune">
+  <div class="col">
+    <p class="eyebrow">Step 3 · your first tune</p>
+    <h2>Happy Birthday in beeps</h2>
+    <p>We already have enough to play a song. A melody is a list of notes, and each note needs two things: which note it is, and how long it lasts. We'll count length in beats, so the tune can be sped up or slowed down later.</p>
+<pre><code class="py">HAPPY_BIRTHDAY = [                           # (note, how many beats it lasts)
+    (69, .75), (69, .25), (71, 1), (69, 1), (74, 1), (73, 2),
+    (69, .75), (69, .25), (71, 1), (69, 1), (76, 1), (74, 2),
+    (69, .75), (69, .25), (81, 1), (78, 1), (74, 1), (73, 1), (71, 1),
+    (79, .75), (79, .25), (78, 1), (74, 1), (76, 1), (74, 3)]
+
+
+def beep(note, seconds):
+    t = np.arange(int(seconds * SR)) / SR
+    return 0.3 * np.sin(2 * np.pi * hz(note) * t)
+
+
+beat = 60 / 96                               # seconds per beat at 96 beats a minute
+song = np.concatenate([beep(note, beats * beat) for note, beats in HAPPY_BIRTHDAY])
+save('happy_beeps.wav', song)</code></pre>
+    <p><code>beep</code> makes one note. The list comprehension makes 25 of them, each a different length. <code>np.concatenate</code> joins the arrays end to end into one long array. Run it and open <code>happy_beeps.wav</code>.</p>
+    <p>It's clearly Happy Birthday. It also sounds like a microwave. The notes are flat and lifeless, and there's a click between each pair. The rest of this tutorial fixes that, one idea at a time.</p>
+  </div>
+  <figure class="wide">
+    <canvas id="cT" class="c-lg hov"></canvas>
+    <div class="controls">
+      <button class="btn" id="pT">Play the beep version</button>
+    </div>
+    <div class="numbers">
+      <div class="shape" id="sT"></div>
+      <div class="nums-wrap" id="tT"></div>
+      <div class="hint">Point at a note to see its numbers. The highlighted note follows the music while it plays.</div>
+    </div>
+    <figcaption>The melody as a picture: time runs left to right, and higher notes sit higher. Each bar is one <code>(note, beats)</code> pair. The table shows how each pair becomes an array, and how long that array is.</figcaption>
+  </figure>
+</section>
+
+<!-- 4 -->
+<section id="envelope">
+  <div class="col">
+    <p class="eyebrow">Step 4 · <code>envelope()</code></p>
+    <h2>Giving each note a shape</h2>
+    <p>Why the clicks? A raw sine starts at full volume and stops dead. Your ear hears that sudden jump as a click. Real sounds swell up, then die away. We can describe that shape as its own list of numbers between 0 and 1, called an envelope:</p>
+<pre><code class="py">def envelope(n, attack, decay):
+    t = np.arange(n) / SR
+    e = np.exp(-t / decay)                   # fade out smoothly
+    k = int(attack * SR)
+    if k:
+        e[:k] *= np.linspace(0, 1, k)        # quick fade in over the first k samples
+    return e</code></pre>
+    <p>The first <code>attack</code> seconds ramp up in a straight line. After that, <code>exp(-t / decay)</code> fades smoothly: after <code>decay</code> seconds the note is at 37% of its peak, after twice that 14%. The envelope has the same shape as the wave, so NumPy can multiply them <em>element by element</em>: sample 0 times sample 0, sample 1 times sample 1, and so on.</p>
+  </div>
+  <figure class="wide">
+    <canvas id="c3" class="c-lg hov"></canvas>
+    <div class="controls">
+      <button class="btn ghost" id="p3raw">Play raw</button>
+      <button class="btn" id="p3env">Play shaped</button>
+      <label class="ctl" for="att">attack <input type="range" id="att" min="0" max="300" step="1" value="3"><output id="attOut">3 ms</output></label>
+      <label class="ctl" for="dec">decay <input type="range" id="dec" min="0.05" max="2" step="0.01" value="0.5"><output id="decOut">0.50 s</output></label>
+    </div>
+    <div class="numbers">
+      <div class="shape" id="s3"></div>
+      <div class="nums-wrap" id="t3"></div>
+      <div class="hint">The highlighted column follows your pointer on the graph.</div>
+    </div>
+    <figcaption>The faint band is the raw sine. The solid shape is the same sine multiplied by the dashed envelope. In the table, the bottom row is always the top row times the middle row.</figcaption>
+  </figure>
+</section>
+
+<!-- 5 -->
+<section id="pluck" style="--c:var(--pluck)">
+  <div class="col">
+    <p class="eyebrow">Step 5 · <code>pluck()</code></p>
+    <h2>A plucked string is eight sine waves</h2>
+    <p>The clicks are gone, but a sine wave still sounds like a test tone. Here's why. A real string vibrates at its main frequency <em>and</em> at 2×, 3×, 4× that frequency, all at once. These extra waves are called harmonics. Their mix is the reason a guitar and a flute sound different when they play the same note. So let's add eight of them:</p>
+<pre><code class="py">def pluck(note, seconds, volume=0.5, bright=1.0):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    x = np.zeros(n)
+    for h in range(1, 9):                                # harmonics 1 to 8
+        loudness = bright ** h / h ** 1.1                # higher ones are quieter
+        fade = np.exp(-t * (2.5 + 1.6 * h))              # higher ones fade sooner
+        x += loudness * np.sin(2 * np.pi * hz(note) * h * t) * fade
+    return volume * x * envelope(n, 0.003, 10)</code></pre>
+    <p>Two details make it sound like a string. Each harmonic is quieter than the one before. Each one also fades faster, so the note starts bright and turns mellow within a second, just as a real string does. <code>bright</code> tilts the mix: below 1 the top harmonics are muted, above 1 they're boosted.</p>
+  </div>
+  <figure class="wide">
+    <div class="row2">
+      <div><div class="panel-label">The recipe: how loud each harmonic is</div><canvas id="c4spec" class="c-md"></canvas></div>
+      <div><div class="panel-label">Two wiggles up close</div><canvas id="c4zoom" class="c-md hov"></canvas></div>
+    </div>
+    <div><div class="panel-label">The whole note, 1.6 seconds</div><canvas id="c4full" class="c-sm"></canvas></div>
+    <div class="controls">
+      <button class="btn" id="p4" style="--c:var(--pluck)">Play pluck</button>
+      <label class="ctl" for="harm">harmonics <input type="range" id="harm" min="1" max="8" step="1" value="8"><output id="harmOut">8</output></label>
+      <label class="ctl" for="bright">bright <input type="range" id="bright" min="0.5" max="1.4" step="0.05" value="1"><output id="brightOut">1.00</output></label>
+    </div>
+    <figcaption>Note 57, the A at 220 Hz. In the close-up the thin lines are the separate harmonics and the thick line is their sum. Slide harmonics down to 1 and the pluck turns back into a plain beep.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>The loop is secretly a matrix</h3>
+    <p>Each pass of the <code>for h</code> loop makes one full-length array and adds it into <code>x</code>. Stack those eight arrays on top of each other instead and you get a matrix: one row per harmonic, one column per sample. Adding down each column gives exactly the same <code>x</code>. In NumPy that is <code>X.sum(axis=0)</code>.</p>
+  </div>
+  <figure class="wide">
+    <canvas id="c4mat" class="c-xl hov"></canvas>
+    <div class="numbers">
+      <div class="shape" id="s4"></div>
+      <div class="nums-wrap" id="t4"></div>
+      <div class="hint">Point at the matrix to pick a column. The bold bottom row is the sum of the rows above it.</div>
+    </div>
+    <figcaption>The same two wiggles as the close-up above, as a heat map. Each row is one harmonic: warm cells are positive, cool cells negative, pale cells near zero. Row 1 changes slowly. Row 8 flickers eight times faster and is fainter, because it is quieter.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>Reading the recipe back from the numbers</h3>
+    <p>We can also run the process backwards. A Fourier transform takes a slice of samples and measures how much of each frequency is inside it. Doing that every few milliseconds gives a <strong>spectrogram</strong>: time runs left to right and frequency runs bottom to top. It's a good way to check that a sound contains what you meant to put in it.</p>
+  </div>
+  <figure class="wide">
+    <canvas id="c4sg" class="c-xl"></canvas>
+    <div class="shape" id="s4sg"></div>
+    <figcaption>Spectrogram of the pluck above, measured from its samples. The bright lines sit at 220, 440, 660 Hz and so on, which are the harmonics we added. The higher lines fade sooner, just as the code says. Change the sliders above and this graph updates.</figcaption>
+  </figure>
+</section>
+
+<!-- 6 -->
+<section id="glock" style="--c:var(--glock)">
+  <div class="col">
+    <p class="eyebrow">Step 6 · <code>bell()</code></p>
+    <h2>A bell is overtones that don't line up</h2>
+    <p>For the melody we want something that rings out over the band. Swap the whole-number multiples for 2.76 and 5.4 and the string turns into metal. Bars and bells bend in shapes whose overtones fall <em>between</em> the harmonics of a string. The wave never quite repeats, and the ear hears a bell.</p>
+<pre><code class="py">def bell(note, seconds, volume=0.35):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    f = hz(note)
+    x = (np.sin(2 * np.pi * f * t)
+         + 0.35 * np.sin(2 * np.pi * f * 2.76 * t) * np.exp(-t * 6)
+         + 0.15 * np.sin(2 * np.pi * f * 5.4 * t) * np.exp(-t * 12))
+    return volume * x * envelope(n, 0.002, 0.9)</code></pre>
+    <p>The two odd overtones also die fastest. The strike sounds metallic for a moment, then settles into a pure ring, like a glockenspiel or a music box.</p>
+  </div>
+  <figure class="wide">
+    <div><div class="panel-label">Where the overtones sit, as multiples of the note</div><canvas id="c5ratio" class="c-md"></canvas></div>
+    <div class="row2">
+      <div><div class="panel-label" style="color:var(--pluck)">pluck · 10 ms</div><canvas id="c5a" class="c-sm"></canvas></div>
+      <div><div class="panel-label" style="color:var(--glock)">bell · 10 ms</div><canvas id="c5b" class="c-sm"></canvas></div>
+    </div>
+    <div class="row2">
+      <div><div class="panel-label" style="color:var(--pluck)">pluck spectrogram</div><canvas id="c5sa" class="c-lg"></canvas></div>
+      <div><div class="panel-label" style="color:var(--glock)">bell spectrogram</div><canvas id="c5sb" class="c-lg"></canvas></div>
+    </div>
+    <div class="controls">
+      <button class="btn ghost" id="p5a" style="--c:var(--pluck)">Play pluck</button>
+      <button class="btn" id="p5b" style="--c:var(--glock)">Play bell</button>
+    </div>
+    <figcaption>The same note on both, 81, which is the A at 880 Hz. The pluck's spectrogram is an evenly spaced ladder. The bell has just three lines, at 880, 2,429 and 4,752 Hz, and the top two vanish within a fraction of a second.</figcaption>
+  </figure>
+</section>
+
+<!-- 7 -->
+<section id="pad" style="--c:var(--pad)">
+  <div class="col">
+    <p class="eyebrow">Step 7 · <code>pad()</code></p>
+    <h2>A soft chord that breathes</h2>
+    <p>A pad is a soft, held chord that fills the background, like a string section. This one takes a list of notes and plays each of them three times: once in tune, and once nudged 0.08 of a note up and down.</p>
+<pre><code class="py">def pad(notes, seconds, volume=0.12):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    x = np.zeros(n)
+    for note in notes:
+        for detune in (-0.08, 0, 0.08):
+            f = hz(note + detune)
+            x += np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * f * 2 * t)
+    swell = np.minimum(1, t / 0.6) * np.minimum(1, (seconds - t) / 0.5).clip(0)
+    return volume * x * swell / len(notes)</code></pre>
+    <p>Why play slightly out of tune on purpose? Two tones that close together drift in and out of step. When their peaks line up they add up, and when they're opposite they cancel. The volume pulses at the difference between the two frequencies. This is called <strong>beating</strong>, and it's one of the effects on the Sound Waves page. A slow wobble makes a held chord sound alive. <code>swell</code> fades the pad in over 0.6 s and out over 0.5 s.</p>
+  </div>
+  <figure class="wide">
+    <canvas id="c6" class="c-md"></canvas>
+    <div class="controls">
+      <button class="btn" id="p6" style="--c:var(--pad)">Play D major pad</button>
+      <label class="ctl" for="det">detune <input type="range" id="det" min="0" max="0.3" step="0.01" value="0.08"><output id="detOut">0.08</output></label>
+      <span class="readout" id="r6"></span>
+    </div>
+    <div class="numbers">
+      <div class="shape" id="s6"></div>
+      <div class="nums-wrap" id="t6"></div>
+    </div>
+    <figcaption>Three seconds of one pad note, 62. With detune at 0 the band is flat. Raise it and the loudness starts to pulse, faster the more you detune. The table lists all nine frequencies the pad adds for a D major chord. The last column is how many times per second each note pulses.</figcaption>
+  </figure>
+</section>
+
+<!-- 8 -->
+<section id="rhythm">
+  <div class="col">
+    <p class="eyebrow">Step 8 · <code>bass()</code> <code>kick()</code> <code>snare()</code> <code>hat()</code></p>
+    <h2>Bass and drums from math and static</h2>
+    <p>Now the rhythm section. The bass is the simplest voice we'll write: a low sine plus a quieter copy one octave up, with a quick fade at the end so notes don't blur together.</p>
+<pre><code class="py">def bass(note, seconds, volume=0.45):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    f = hz(note)
+    x = np.sin(2 * np.pi * f * t) + 0.25 * np.sin(2 * np.pi * f * 2 * t)
+    stop = np.minimum(1, (seconds - t) / 0.03).clip(0)   # quick fade at the very end
+    return volume * x * envelope(n, 0.005, 0.5) * stop</code></pre>
+    <p>A kick drum is a sine wave whose pitch falls. Ours starts at 160 Hz and drops to 50 Hz within about a tenth of a second. When the frequency changes over time, <code>sin(2π · f · t)</code> no longer works. Instead <code>np.cumsum</code> adds up the pitch sample by sample to keep track of how far the wave has turned. A fast drop in pitch plus a fast fade is what we hear as a thump.</p>
+<pre><code class="py">def kick(volume=0.9):
+    n = int(0.35 * SR)
+    t = np.arange(n) / SR
+    pitch = 50 + 110 * np.exp(-t * 30)                   # 160 Hz falling to 50 Hz
+    phase = 2 * np.pi * np.cumsum(pitch) / SR            # add up the pitch so far
+    return volume * np.sin(phase) * np.exp(-t * 9)</code></pre>
+    <p>Snares and hi-hats have no clear pitch, so sine waves are the wrong starting point. They start from random numbers: <code>rng.standard_normal(n)</code> is pure static. A filter from SciPy then keeps only part of it. The snare keeps the middle, 1.5 to 8 kHz, and adds a short 185 Hz tone for body. The hat keeps only what's above 7 kHz and is gone in a few hundredths of a second.</p>
+<pre><code class="py">from scipy.signal import butter, lfilter
+
+rng = np.random.default_rng(7)
+
+
+def snare(volume=0.35):
+    n = int(0.25 * SR)
+    t = np.arange(n) / SR
+    b, a = butter(2, [1500, 8000], 'band', fs=SR)        # keep 1.5 to 8 kHz
+    hiss = lfilter(b, a, rng.standard_normal(n)) * np.exp(-t * 18)
+    body = 0.5 * np.sin(2 * np.pi * 185 * t) * np.exp(-t * 25)
+    return volume * (hiss + body)
+
+
+def hat(volume=0.12):
+    n = int(0.06 * SR)
+    t = np.arange(n) / SR
+    b, a = butter(2, 7000, 'high', fs=SR)                # keep only above 7 kHz
+    return volume * lfilter(b, a, rng.standard_normal(n)) * np.exp(-t * 70)</code></pre>
+  </div>
+  <figure class="wide">
+    <div class="drums">
+      <div class="drum" style="--c:var(--bass)"><h3>bass</h3><canvas id="d1" class="c-sm"></canvas><span class="shape" id="sd1"></span><button class="btn" id="pd1" style="--c:var(--bass)">Play</button></div>
+      <div class="drum"><h3>kick</h3><canvas id="d2" class="c-sm"></canvas><span class="shape" id="sd2"></span><button class="btn" id="pd2" style="--c:var(--drums)">Play</button></div>
+      <div class="drum"><h3>snare</h3><canvas id="d3" class="c-sm"></canvas><span class="shape" id="sd3"></span><button class="btn" id="pd3" style="--c:var(--drums)">Play</button></div>
+      <div class="drum"><h3>hat</h3><canvas id="d4" class="c-sm"></canvas><span class="shape" id="sd4"></span><button class="btn" id="pd4" style="--c:var(--drums)">Play</button></div>
+    </div>
+    <div class="controls"><button class="btn" id="pGroove">Play them together, two bars</button></div>
+    <div class="numbers">
+      <div class="shape">The first ten numbers of a hi-hat, step by step</div>
+      <div class="nums-wrap" id="t7"></div>
+    </div>
+    <figcaption>Each sound is drawn at its own length, and the shape under it is its array size. Look at the kick: its wiggles start close together and spread out as the pitch drops. In the table, the filter removes the slow drift from the random numbers and keeps the fast jitter that sounds like "tss".</figcaption>
+  </figure>
+</section>
+
+<!-- 9 -->
+<section id="reverb">
+  <div class="col">
+    <p class="eyebrow">Step 9 · <code>reverb()</code></p>
+    <h2>Putting the band in a room</h2>
+    <p>Everything so far sounds dry, as if played in an empty field. In a real room you hear a sound directly, then again as it bounces off the walls. We can fake that by mixing in delayed, quieter copies. This recipe is from the early 1960s and is known as a Schroeder reverb.</p>
+<pre><code class="py">def reverb(x, wet=0.25):
+    echoes = np.zeros_like(x)
+    for delay, keep in [(1557, .84), (1617, .83), (1491, .82), (1422, .81)]:
+        a = np.zeros(delay + 1)
+        a[0] = 1
+        a[delay] = -keep                                 # y[i] = x[i] + keep * y[i - delay]
+        echoes += lfilter([1], a, x)
+    for delay, g in [(225, .5), (556, .5)]:              # smear the echoes together
+        b = np.zeros(delay + 1)
+        b[0] = -g
+        b[delay] = 1
+        a = np.zeros(delay + 1)
+        a[0] = 1
+        a[delay] = -g
+        echoes = lfilter(b, a, echoes)
+    return x + wet * echoes / 4</code></pre>
+    <p>The first loop makes four echo machines. Each repeats its input every 1,422 to 1,617 samples (32 to 37 ms) and keeps about 82% of the volume each time round. The delays differ slightly on purpose, so the echoes don't stack up into a metallic ring. The second loop runs two "all-pass" filters that smear the echoes into a smooth tail. The last line mixes the echoes in under the original sound. <code>lfilter</code> is doing the repeating for us. The comment shows the rule it applies.</p>
+  </div>
+  <figure class="wide">
+    <div><div class="panel-label">One click through the reverb, 1.5 seconds</div><canvas id="c8" class="c-md"></canvas></div>
+    <div class="controls">
+      <button class="btn ghost" id="p8dry" style="--c:var(--glock)">Play bell dry</button>
+      <button class="btn" id="p8wet" style="--c:var(--glock)">Play bell with reverb</button>
+      <label class="ctl" for="wet" style="--c:var(--glock)">wet <input type="range" id="wet" min="0" max="1" step="0.05" value="0.3"><output id="wetOut">0.30</output></label>
+    </div>
+    <div class="numbers">
+      <div class="shape" id="s8"></div>
+      <div class="nums-wrap" id="t8"></div>
+    </div>
+    <figcaption>This is the room's "fingerprint". We feed in an array that is 1 at sample 0 and zero everywhere else, which is a single click. The table lists the strongest echoes that come out in the first 100 ms and where they land.</figcaption>
+  </figure>
+</section>
+
+<!-- 10 -->
+<section id="song">
+  <div class="col">
+    <p class="eyebrow">Step 10 · <code>Track</code> and the band</p>
+    <h2>Mixing is just adding</h2>
+    <p>In step 3 we joined notes end to end with <code>np.concatenate</code>. That won't work any more. Our new notes ring on after the next one starts, and several instruments play at once. We need a way to put any sound at any moment.</p>
+    <p>The answer is two long arrays of zeros, one for each speaker, and a method that <em>adds</em> a sound into a slice of them. When two sounds overlap, their numbers simply add. That is all mixing is.</p>
+<pre><code class="py">class Track:
+    def __init__(self, seconds):
+        n = int(seconds * SR)
+        self.left = np.zeros(n)
+        self.right = np.zeros(n)
+
+    def add(self, start, sound, pan=0.0):
+        i = int(start * SR)                              # which sample to start at
+        sound = sound[:len(self.left) - i]
+        self.left[i:i + len(sound)] += sound * (1 - pan) ** 0.5
+        self.right[i:i + len(sound)] += sound * (1 + pan) ** 0.5</code></pre>
+    <p><code>pan</code> moves a sound left (negative) or right (positive). The square roots keep the total loudness steady as it moves.</p>
+    <p>Now we can write a short intro for the band. It's driven by a small table of note numbers. <code>CHORDS</code> is a four-bar loop of D, A, B minor and G, one of the most-used chord loops in pop. Each entry is a bass note and the three notes of the chord.</p>
+<pre><code class="py">CHORDS = [(50, [62, 66, 69]),                # D       (bass note, chord notes)
+          (45, [61, 64, 69]),                # A
+          (47, [62, 66, 71]),                # B minor
+          (43, [62, 67, 71])]                # G
+
+
+def backing(track, bars, bpm=112):
+    beat = 60 / bpm
+    for bar in range(bars):
+        t0 = bar * 4 * beat                              # when this bar starts
+        root, chord = CHORDS[bar % 4]
+        up = [note + 12 for note in chord]               # the chord, one octave higher
+        pattern = [up[0], up[1], up[2], up[1], up[0], chord[2], up[1], up[2]]
+        for i, note in enumerate(pattern):
+            track.add(t0 + i * beat / 2, pluck(note, beat * 1.5, 0.3 if i % 2 else 0.38), pan=-0.25)
+        if bar &gt;= 1:                                     # bass and drums join in bar 2
+            for q in range(4):
+                track.add(t0 + q * beat, bass(root - 12 if q != 2 else root - 5, beat * 0.9))
+            for q in (0, 2):
+                track.add(t0 + q * beat, kick())
+            track.add(t0 + 2.5 * beat, kick(0.6))
+            for q in (1, 3):
+                track.add(t0 + q * beat, snare())
+            for e in range(8):
+                track.add(t0 + e * beat / 2, hat(0.12 if e % 2 else 0.08), pan=0.4)
+    return bars * 4 * beat                               # the second where the backing ends</code></pre>
+    <p>Read it one bar at a time. Every bar plays the chord's notes one after another on the pluck, eight notes per bar. From the second bar the bass and drums join: kick on beats 1 and 3, snare on 2 and 4, hats in between. We'll only ask for two bars, which is about four seconds, so you'll hear D and then A. Ask for more bars and the loop carries on through B minor and G.</p>
+    <p>Then Happy Birthday itself. It's the same list of notes as step 3, played on bells and placed on the track instead of joined end to end. Underneath, a bass note and a plucked chord land every three beats, because Happy Birthday is a waltz.</p>
+<pre><code class="py">HB_CHORDS = [(50, [62, 66, 69]), (45, [61, 64, 69]), (45, [61, 64, 69]), (50, [62, 66, 69]),
+             (50, [62, 66, 69]), (43, [62, 67, 71]), (50, [62, 66, 69]), (50, [62, 66, 69])]
+
+
+def happy_birthday(track, start, bpm=96):
+    beat = 60 / bpm
+    t = start
+    for note, beats in HAPPY_BIRTHDAY:                   # the tune, on bells
+        track.add(t, bell(note, beats * beat + 0.6, 0.42), pan=0.1)
+        t += beats * beat
+    for k, (root, chord) in enumerate(HB_CHORDS):        # one chord every 3 beats
+        t0 = start + k * 3 * beat
+        track.add(t0, bass(root - 12, 3 * beat, 0.35))
+        for j, note in enumerate(chord):
+            track.add(t0 + j * 0.02, pluck(note - 12, 3 * beat, 0.22), pan=-0.3)</code></pre>
+  </div>
+  <figure class="wide">
+    <canvas id="timeline" aria-label="Timeline of every note in the song"></canvas>
+    <div class="tl-info" id="tlInfo">Point at any note to see the exact call that made it and where its numbers were added.</div>
+    <div class="controls">
+      <button class="btn" id="playSong2" style="--c:var(--hb)">Play from the start</button>
+      <div class="legend">
+        <span style="--c:var(--glock)"><i></i>bell</span>
+        <span style="--c:var(--pluck)"><i></i>pluck</span>
+        <span style="--c:var(--pad)"><i></i>pad</span>
+        <span style="--c:var(--bass)"><i></i>bass</span>
+        <span style="--c:var(--drums)"><i></i>kick · snare · hat</span>
+      </div>
+    </div>
+    <div class="numbers">
+      <div class="shape" id="s9"></div>
+      <div class="nums-wrap" id="t9"></div>
+      <div class="hint">These rows update live while the song plays. When it's stopped they show the moment under your pointer.</div>
+    </div>
+    <figcaption>Every <code>track.add</code> call in the finished 25-second song, each in its instrument's lane. Higher notes sit higher in the lane. The strip at the bottom is the final waveform. Click anywhere on the timeline to play from that point.</figcaption>
+  </figure>
+</section>
+
+<!-- 11 -->
+<section id="finish">
+  <div class="col">
+    <p class="eyebrow">Step 11 · the finished song</p>
+    <h2>Putting it together and saving</h2>
+    <p>The last few lines call everything we've written. Two bars of the band, one held pad chord to make room, then Happy Birthday at second 6:</p>
+<pre><code class="py">track = Track(30)
+end = backing(track, bars=2)                             # a 4.3 second intro
+track.add(end, pad([62, 66, 69], 4 * 60 / 112, 0.1))     # one held chord
+happy_birthday(track, start=6)
+
+x = np.stack([reverb(track.left, 0.3), reverb(track.right, 0.3)], axis=1)
+x = x[:25 * SR]                                          # keep 25 seconds
+x = np.tanh(1.3 * x / np.abs(x).max()) * 0.8             # round off the loudest peaks
+fade = int(1.5 * SR)
+x[-fade:] *= np.linspace(1, 0, fade)[:, None]            # fade out the last 1.5 seconds
+save('happy_birthday.wav', x)</code></pre>
+    <p><code>np.stack(..., axis=1)</code> puts the left and right arrays side by side as the two columns of one matrix, which is the layout a stereo WAV file uses. The next line scales the whole song so its loudest moment is exactly 1 and passes it through <code>tanh</code>, which rounds off the peaks. Then the last 1.5 seconds fade to silence, and <code>save</code> writes the file.</p>
+  </div>
+  <figure class="col">
+    <canvas id="c10" class="c-lg"></canvas>
+    <div class="numbers">
+      <div class="shape">One sample's journey to the file</div>
+      <div class="nums-wrap" id="t10"></div>
+    </div>
+    <figcaption>What <code>tanh(1.3 · x) · 0.8</code> does to each sample. Quiet samples (near the middle) come out almost unchanged. The loudest ones are squeezed to 0.69 instead of 1, so peaks round off gently instead of distorting harshly.</figcaption>
+  </figure>
+  <div class="col">
+    <h3>The whole program</h3>
+    <p>Here is everything from steps 1 to 11 in one file. Save it as <code>happy_numpy.py</code> and run <code>python happy_numpy.py</code>. It takes about ten seconds and writes three files: <code>beep.wav</code>, <code>happy_beeps.wav</code> and <code>happy_birthday.wav</code>.</p>
+    <details class="full" id="fullWrap">
+      <summary>Show the complete program (201 lines)</summary>
+      <button class="btn plain ghost" id="copyAll" type="button">Copy the program</button>
+<pre><code class="py" id="fullCode">import numpy as np
+from scipy.io import wavfile
+
+SR = 44100                                   # samples per second
+
+
+def save(name, x):
+    wavfile.write(name, SR, (x * 32767).astype(np.int16))
+
+
+t = np.arange(SR) / SR                       # the time of every sample in one second
+x = 0.3 * np.sin(2 * np.pi * 440 * t)        # 440 wiggles per second, at 30% volume
+save('beep.wav', x)
+
+
+def hz(note):
+    return 440 * 2 ** ((note - 69) / 12)
+
+
+HAPPY_BIRTHDAY = [                           # (note, how many beats it lasts)
+    (69, .75), (69, .25), (71, 1), (69, 1), (74, 1), (73, 2),
+    (69, .75), (69, .25), (71, 1), (69, 1), (76, 1), (74, 2),
+    (69, .75), (69, .25), (81, 1), (78, 1), (74, 1), (73, 1), (71, 1),
+    (79, .75), (79, .25), (78, 1), (74, 1), (76, 1), (74, 3)]
+
+
+def beep(note, seconds):
+    t = np.arange(int(seconds * SR)) / SR
+    return 0.3 * np.sin(2 * np.pi * hz(note) * t)
+
+
+beat = 60 / 96                               # seconds per beat at 96 beats a minute
+song = np.concatenate([beep(note, beats * beat) for note, beats in HAPPY_BIRTHDAY])
+save('happy_beeps.wav', song)
+
+
+def envelope(n, attack, decay):
+    t = np.arange(n) / SR
+    e = np.exp(-t / decay)                   # fade out smoothly
+    k = int(attack * SR)
+    if k:
+        e[:k] *= np.linspace(0, 1, k)        # quick fade in over the first k samples
+    return e
+
+
+def pluck(note, seconds, volume=0.5, bright=1.0):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    x = np.zeros(n)
+    for h in range(1, 9):                                # harmonics 1 to 8
+        loudness = bright ** h / h ** 1.1                # higher ones are quieter
+        fade = np.exp(-t * (2.5 + 1.6 * h))              # higher ones fade sooner
+        x += loudness * np.sin(2 * np.pi * hz(note) * h * t) * fade
+    return volume * x * envelope(n, 0.003, 10)
+
+
+def bell(note, seconds, volume=0.35):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    f = hz(note)
+    x = (np.sin(2 * np.pi * f * t)
+         + 0.35 * np.sin(2 * np.pi * f * 2.76 * t) * np.exp(-t * 6)
+         + 0.15 * np.sin(2 * np.pi * f * 5.4 * t) * np.exp(-t * 12))
+    return volume * x * envelope(n, 0.002, 0.9)
+
+
+def pad(notes, seconds, volume=0.12):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    x = np.zeros(n)
+    for note in notes:
+        for detune in (-0.08, 0, 0.08):
+            f = hz(note + detune)
+            x += np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * f * 2 * t)
+    swell = np.minimum(1, t / 0.6) * np.minimum(1, (seconds - t) / 0.5).clip(0)
+    return volume * x * swell / len(notes)
+
+
+def bass(note, seconds, volume=0.45):
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    f = hz(note)
+    x = np.sin(2 * np.pi * f * t) + 0.25 * np.sin(2 * np.pi * f * 2 * t)
+    stop = np.minimum(1, (seconds - t) / 0.03).clip(0)   # quick fade at the very end
+    return volume * x * envelope(n, 0.005, 0.5) * stop
+
+
+def kick(volume=0.9):
+    n = int(0.35 * SR)
+    t = np.arange(n) / SR
+    pitch = 50 + 110 * np.exp(-t * 30)                   # 160 Hz falling to 50 Hz
+    phase = 2 * np.pi * np.cumsum(pitch) / SR            # add up the pitch so far
+    return volume * np.sin(phase) * np.exp(-t * 9)
+from scipy.signal import butter, lfilter
+
+rng = np.random.default_rng(7)
+
+
+def snare(volume=0.35):
+    n = int(0.25 * SR)
+    t = np.arange(n) / SR
+    b, a = butter(2, [1500, 8000], 'band', fs=SR)        # keep 1.5 to 8 kHz
+    hiss = lfilter(b, a, rng.standard_normal(n)) * np.exp(-t * 18)
+    body = 0.5 * np.sin(2 * np.pi * 185 * t) * np.exp(-t * 25)
+    return volume * (hiss + body)
+
+
+def hat(volume=0.12):
+    n = int(0.06 * SR)
+    t = np.arange(n) / SR
+    b, a = butter(2, 7000, 'high', fs=SR)                # keep only above 7 kHz
+    return volume * lfilter(b, a, rng.standard_normal(n)) * np.exp(-t * 70)
+
+
+def reverb(x, wet=0.25):
+    echoes = np.zeros_like(x)
+    for delay, keep in [(1557, .84), (1617, .83), (1491, .82), (1422, .81)]:
+        a = np.zeros(delay + 1)
+        a[0] = 1
+        a[delay] = -keep                                 # y[i] = x[i] + keep * y[i - delay]
+        echoes += lfilter([1], a, x)
+    for delay, g in [(225, .5), (556, .5)]:              # smear the echoes together
+        b = np.zeros(delay + 1)
+        b[0] = -g
+        b[delay] = 1
+        a = np.zeros(delay + 1)
+        a[0] = 1
+        a[delay] = -g
+        echoes = lfilter(b, a, echoes)
+    return x + wet * echoes / 4
+
+
+class Track:
+    def __init__(self, seconds):
+        n = int(seconds * SR)
+        self.left = np.zeros(n)
+        self.right = np.zeros(n)
+
+    def add(self, start, sound, pan=0.0):
+        i = int(start * SR)                              # which sample to start at
+        sound = sound[:len(self.left) - i]
+        self.left[i:i + len(sound)] += sound * (1 - pan) ** 0.5
+        self.right[i:i + len(sound)] += sound * (1 + pan) ** 0.5
+
+
+CHORDS = [(50, [62, 66, 69]),                # D       (bass note, chord notes)
+          (45, [61, 64, 69]),                # A
+          (47, [62, 66, 71]),                # B minor
+          (43, [62, 67, 71])]                # G
+
+
+def backing(track, bars, bpm=112):
+    beat = 60 / bpm
+    for bar in range(bars):
+        t0 = bar * 4 * beat                              # when this bar starts
+        root, chord = CHORDS[bar % 4]
+        up = [note + 12 for note in chord]               # the chord, one octave higher
+        pattern = [up[0], up[1], up[2], up[1], up[0], chord[2], up[1], up[2]]
+        for i, note in enumerate(pattern):
+            track.add(t0 + i * beat / 2, pluck(note, beat * 1.5, 0.3 if i % 2 else 0.38), pan=-0.25)
+        if bar &gt;= 1:                                     # bass and drums join in bar 2
+            for q in range(4):
+                track.add(t0 + q * beat, bass(root - 12 if q != 2 else root - 5, beat * 0.9))
+            for q in (0, 2):
+                track.add(t0 + q * beat, kick())
+            track.add(t0 + 2.5 * beat, kick(0.6))
+            for q in (1, 3):
+                track.add(t0 + q * beat, snare())
+            for e in range(8):
+                track.add(t0 + e * beat / 2, hat(0.12 if e % 2 else 0.08), pan=0.4)
+    return bars * 4 * beat                               # the second where the backing ends
+
+
+HB_CHORDS = [(50, [62, 66, 69]), (45, [61, 64, 69]), (45, [61, 64, 69]), (50, [62, 66, 69]),
+             (50, [62, 66, 69]), (43, [62, 67, 71]), (50, [62, 66, 69]), (50, [62, 66, 69])]
+
+
+def happy_birthday(track, start, bpm=96):
+    beat = 60 / bpm
+    t = start
+    for note, beats in HAPPY_BIRTHDAY:                   # the tune, on bells
+        track.add(t, bell(note, beats * beat + 0.6, 0.42), pan=0.1)
+        t += beats * beat
+    for k, (root, chord) in enumerate(HB_CHORDS):        # one chord every 3 beats
+        t0 = start + k * 3 * beat
+        track.add(t0, bass(root - 12, 3 * beat, 0.35))
+        for j, note in enumerate(chord):
+            track.add(t0 + j * 0.02, pluck(note - 12, 3 * beat, 0.22), pan=-0.3)
+
+
+track = Track(30)
+end = backing(track, bars=2)                             # a 4.3 second intro
+track.add(end, pad([62, 66, 69], 4 * 60 / 112, 0.1))     # one held chord
+happy_birthday(track, start=6)
+
+x = np.stack([reverb(track.left, 0.3), reverb(track.right, 0.3)], axis=1)
+x = x[:25 * SR]                                          # keep 25 seconds
+x = np.tanh(1.3 * x / np.abs(x).max()) * 0.8             # round off the loudest peaks
+fade = int(1.5 * SR)
+x[-fade:] *= np.linspace(1, 0, fade)[:, None]            # fade out the last 1.5 seconds
+save('happy_birthday.wav', x)
+</code></pre>
+    </details>
+    <h3>Make it yours</h3>
+    <p>Now that you've built it, it's easy to change. Swap <code>HAPPY_BIRTHDAY</code> for another list of <code>(note, beats)</code> pairs to play a different tune. Ask for <code>bars=8</code> for a longer intro (and move <code>start</code> later to make room), change <code>CHORDS</code> for a different mood, or raise <code>bpm</code> to speed the band up. Call <code>pluck</code> with <code>bright=1.3</code> for a sharper attack, or change 2.76 in <code>bell</code> to hear how one number changes the metal.</p>
+    <p>Every sound here came from three ideas: frequency is pitch, amplitude is loudness, and adding waves is mixing.</p>
+  </div>
+</section>
+</article>
+
+<footer class="col">
+  <p>The audio on this page is computed live in your browser by a JavaScript version of the same code, with the same formulas and numbers. The drum noise uses a different random generator, so individual drum hits differ slightly from what Python gives you. Inspired by the <a href="https://www-users.cse.umn.edu/~rogness/math1155/soundwaves/" target="_blank" rel="noopener">Sound Waves</a> page from the University of Minnesota.</p>
+</footer>
+
+<script>
+/* ---------- synth: the same math as the Python on this page ---------- */
+function synthLib(){
+  const SR = 44100;
+  const f = m => 440 * Math.pow(2, (m - 69) / 12);
+  const N = d => Math.floor(d * SR);
+  function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  const rand = mulberry(7);
+  function normal(n){const x=new Float32Array(n);for(let i=0;i<n;i+=2){const u=rand()||1e-9,v=rand(),r=Math.sqrt(-2*Math.log(u));x[i]=r*Math.cos(2*Math.PI*v);if(i+1<n)x[i+1]=r*Math.sin(2*Math.PI*v);}return x;}
+
+  function env(n,a,d){const e=new Float32Array(n),k=Math.floor(a*SR);for(let i=0;i<n;i++){e[i]=Math.exp(-i/SR/d);if(i<k)e[i]*=k>1?i/(k-1):0;}return e;}
+
+  function pluck(m,dur,vel=.5,bright=1,H=8){
+    const n=N(dur),x=new Float32Array(n),fr=f(m);
+    for(let h=1;h<=H;h++){const amp=Math.pow(bright,h)/Math.pow(h,1.1),w=2*Math.PI*fr*h/SR,r=Math.exp(-(2.5+1.6*h)/SR);let dec=1;
+      for(let i=0;i<n;i++){x[i]+=amp*Math.sin(w*i)*dec;dec*=r;}}
+    const e=env(n,.003,10);for(let i=0;i<n;i++)x[i]*=vel*e[i];return x;}
+
+  function glock(m,dur,vel=.35){
+    const n=N(dur),x=new Float32Array(n),fr=f(m),e=env(n,.002,.9),P=2*Math.PI;
+    for(let i=0;i<n;i++){const t=i/SR;x[i]=vel*e[i]*(Math.sin(P*fr*t)+.35*Math.sin(P*fr*2.76*t)*Math.exp(-t*6)+.15*Math.sin(P*fr*5.4*t)*Math.exp(-t*12));}
+    return x;}
+
+  function pad(ms,dur,vel=.12,det=.08){
+    const n=N(dur),x=new Float32Array(n),P=2*Math.PI;
+    for(const m of ms)for(const dt of [-det,0,det]){const fr=f(m+dt);for(let i=0;i<n;i++){const t=i/SR;x[i]+=Math.sin(P*fr*t)+.3*Math.sin(P*fr*2*t);}}
+    for(let i=0;i<n;i++){const t=i/SR,e=Math.min(1,t/.6)*Math.max(0,Math.min(1,(dur-t)/.5));x[i]*=vel*e/ms.length;}
+    return x;}
+
+  function bass(m,dur,vel=.45){
+    const n=N(dur),x=new Float32Array(n),fr=f(m),e=env(n,.005,.5),P=2*Math.PI;
+    for(let i=0;i<n;i++){const t=i/SR;x[i]=vel*(Math.sin(P*fr*t)+.25*Math.sin(P*fr*2*t))*e[i]*Math.max(0,Math.min(1,(dur-t)/.03));}
+    return x;}
+
+  function kick(vel=.9){
+    const n=N(.35),x=new Float32Array(n);let ph=0;
+    for(let i=0;i<n;i++){const t=i/SR;ph+=2*Math.PI*(50+110*Math.exp(-t*30))/SR;x[i]=vel*Math.sin(ph)*Math.exp(-t*9);}
+    return x;}
+
+  // 2nd-order Butterworth sections (same response as scipy's butter(2, ...))
+  function biquad(x,type,f0){const w=2*Math.PI*f0/SR,c=Math.cos(w),al=Math.sin(w)/(2*Math.SQRT1_2);let b0,b1,b2;
+    if(type==='low'){b0=(1-c)/2;b1=1-c;b2=(1-c)/2}else{b0=(1+c)/2;b1=-(1+c);b2=(1+c)/2}
+    const a0=1+al,a1=-2*c,a2=1-al,y=new Float32Array(x.length);let x1=0,x2=0,y1=0,y2=0;
+    for(let i=0;i<x.length;i++){const v=(b0*x[i]+b1*x1+b2*x2-a1*y1-a2*y2)/a0;x2=x1;x1=x[i];y2=y1;y1=v;y[i]=v;}return y;}
+
+  function snare(vel=.35){
+    const n=N(.25),nz=biquad(biquad(normal(n),'high',1500),'low',8000),x=new Float32Array(n);
+    for(let i=0;i<n;i++){const t=i/SR;x[i]=vel*(nz[i]*Math.exp(-t*18)+.5*Math.sin(2*Math.PI*185*t)*Math.exp(-t*25));}
+    return x;}
+
+  function hat(vel=.12){
+    const n=N(.06),nz=biquad(normal(n),'high',7000),x=new Float32Array(n);
+    for(let i=0;i<n;i++)x[i]=vel*nz[i]*Math.exp(-i/SR*70);
+    return x;}
+
+  function reverb(x,wet=.25){
+    const L=x.length,y=new Float32Array(L);
+    for(const [d,g] of [[1557,.84],[1617,.83],[1491,.82],[1422,.81]]){const c=new Float32Array(L);for(let i=0;i<L;i++){c[i]=x[i]+(i>=d?g*c[i-d]:0);y[i]+=c[i];}}
+    let z=y;for(const [d,g] of [[225,.5],[556,.5]]){const o=new Float32Array(L);for(let i=0;i<L;i++)o[i]=-g*z[i]+(i>=d?z[i-d]+g*o[i-d]:0);z=o;}
+    const out=new Float32Array(L);for(let i=0;i<L;i++)out[i]=x[i]+wet*z[i]/4;return out;}
+
+  class Track{
+    constructor(secs,dry=false){this.dry=dry;this.events=[];const n=N(secs)+SR*6;this.len=n;this.L=dry?null:new Float32Array(n);this.R=dry?null:new Float32Array(n);}
+    add(t,mk,pan=0,ev){if(ev)this.events.push(Object.assign({t,pan},ev));if(this.dry)return;
+      const x=mk(),i=Math.floor(t*SR),len=Math.min(x.length,this.L.length-i),gl=Math.sqrt(1-pan),gr=Math.sqrt(1+pan);
+      for(let k=0;k<len;k++){this.L[i+k]+=x[k]*gl;this.R[i+k]+=x[k]*gr;}}
+  }
+
+  const SUNNY=[[50,[62,66,69]],[45,[61,64,69]],[47,[62,66,71]],[43,[62,67,71]]];
+  const HOOK=[[78,81,83,81],[76,null,73,76],[78,74,71,74],[76,74,71,69]];
+  const HB=[[69,.75],[69,.25],[71,1],[69,1],[74,1],[73,2],[69,.75],[69,.25],[71,1],[69,1],[76,1],[74,2],
+            [69,.75],[69,.25],[81,1],[78,1],[74,1],[73,1],[71,1],[79,.75],[79,.25],[78,1],[74,1],[76,1],[74,3]];
+  const HB_CH=[[50,[62,66,69]],[45,[61,64,69]],[45,[61,64,69]],[50,[62,66,69]],[50,[62,66,69]],[43,[62,67,71]],[50,[62,66,69]],[50,[62,66,69]]];
+  const r3=v=>+v.toFixed(3);
+
+  function happyBirthday(tr,t0,bpm){
+    const b=60/bpm;let t=t0;
+    for(const [m,d] of HB){const dd=d*b+.6;tr.add(t,()=>glock(m,dd,.42),.1,{lane:'mel',m,d:d*b,call:`bell(${m}, ${r3(dd)}, 0.42)`,n:N(dd)});t+=d*b;}
+    HB_CH.forEach(([r,ch],k)=>{const tt=t0+k*3*b;
+      tr.add(tt,()=>bass(r-12,3*b,.35),0,{lane:'bass',m:r-12,d:3*b,call:`bass(${r-12}, ${r3(3*b)}, 0.35)`,n:N(3*b)});
+      ch.forEach((m,j)=>tr.add(tt+j*.02,()=>pluck(m-12,3*b,.22),-.3,{lane:'chord',m:m-12,d:3*b,call:`pluck(${m-12}, ${r3(3*b)}, 0.22)`,n:N(3*b)}));});
+    return t;}
+
+  function playBar(tr,bar,t0,b){
+    const [r,ch]=SUNNY[bar%4];
+    const arp=[ch[0]+12,ch[1]+12,ch[2]+12,ch[1]+12,ch[0]+12,ch[2],ch[1]+12,ch[2]+12];
+    arp.forEach((m,i)=>{const v=i%2?.3:.38;tr.add(t0+i*b/2,()=>pluck(m,b*1.5,v),-.25,{lane:'chord',m,d:b/2,call:`pluck(${m}, ${r3(b*1.5)}, ${v})`,n:N(b*1.5)});});
+    if(bar>=1){
+      for(let q=0;q<4;q++){const m=q!==2?r-12:r-5;tr.add(t0+q*b,()=>bass(m,b*.9),0,{lane:'bass',m,d:b*.9,call:`bass(${m}, ${r3(b*.9)})`,n:N(b*.9)});}
+      for(const q of [0,2])tr.add(t0+q*b,()=>kick(),0,{lane:'drums',k:0,call:'kick()',n:N(.35)});
+      tr.add(t0+2.5*b,()=>kick(.6),0,{lane:'drums',k:0,call:'kick(0.6)',n:N(.35)});
+      for(const q of [1,3])tr.add(t0+q*b,()=>snare(),0,{lane:'drums',k:1,call:'snare()',n:N(.25)});
+      for(let e=0;e<8;e++){const v=e%2?.12:.08;tr.add(t0+e*b/2,()=>hat(v),.4,{lane:'drums',k:2,call:`hat(${v})`,n:N(.06)});}
+    }
+  }
+
+  function sunny(secs,hbAt,dry=false){
+    const bpm=112,b=60/bpm,tr=new Track(secs+8,dry);let bar=0;
+    while(bar<2){playBar(tr,bar,bar*4*b,b);bar++;}
+    const t=bar*4*b;tr.add(t,()=>pad([62,66,69],4*b,.1),0,{lane:'pad',ms:[62,66,69],d:4*b,call:`pad([62, 66, 69], ${r3(4*b)}, 0.1)`,n:N(4*b)});
+    const hbStart=hbAt,end=happyBirthday(tr,hbStart,96);
+    return {tr,end,b,bars:bar,padAt:t,hbStart};}
+
+  function master(L,R,len){
+    L=reverb(L,.3);R=reverb(R,.3);let mx=1e-9;
+    for(let i=0;i<len;i++){mx=Math.max(mx,Math.abs(L[i]),Math.abs(R[i]));}
+    const oL=new Float32Array(len),oR=new Float32Array(len),fade=Math.floor(1.5*SR);
+    for(let i=0;i<len;i++){let g=1;if(i>=len-fade)g=1-(i-(len-fade))/(fade-1);
+      oL[i]=Math.tanh(1.3*L[i]/mx)*.8*g;oR[i]=Math.tanh(1.3*R[i]/mx)*.8*g;}
+    return [oL,oR];}
+
+  function renderSong(secs,hbAt){
+    const s=sunny(secs,hbAt),len=Math.floor(Math.max(secs,s.end+2.5)*SR);
+    const [L,R]=master(s.tr.L,s.tr.R,len);return {L,R,end:s.end};}
+
+  return {SR,f,HB,env,normal,biquad,pluck,glock,pad,bass,kick,snare,hat,reverb,Track,playBar,sunny,renderSong,master};
+}
+
+/* ---------- page ---------- */
+const S=synthLib(), SR=S.SR, f=S.f;
+const SONG_SECS=25, HB_AT=6;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const $=id=>document.getElementById(id);
+const NAMES=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const noteName=m=>NAMES[m%12]+(Math.floor(m/12)-1);
+const fmt=(v,d=4)=>(v<0?'−':'')+Math.abs(v).toFixed(d);
+const sgn=(v,d=4)=>(v<0?'−':v>0?'+':' ')+Math.abs(v).toFixed(d);
+const int=n=>n.toLocaleString('en-US');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* syntax colors */
+const KW=new Set('def for in return if else class import from as lambda while None and not or is'.split(' '));
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+document.querySelectorAll('code.py').forEach(el=>{
+  const src=el.textContent;
+  el.innerHTML=src.replace(/(#.*$)|('[^'\n]*'|"[^"\n]*")|(\.\d+|\b\d+\.?\d*)|\b([A-Za-z_]\w*)\b|([&<>])/gm,(m,c,s,n,id,e,off,str)=>{
+    if(c)return '<span class="com">'+esc(c)+'</span>';
+    if(s)return '<span class="str">'+esc(s)+'</span>';
+    if(n)return '<span class="num">'+n+'</span>';
+    if(id){if(KW.has(id))return '<span class="kw">'+id+'</span>';if(str[off+m.length]==='(')return '<span class="fn">'+id+'</span>';return id;}
+    return esc(e);});
+});
+
+/* tables */
+function numTable(el,head,rows,hi=-1){
+  let h='<table class="nums"><thead><tr><th scope="col">'+head.label+'</th>'+head.cells.map((c,j)=>`<th scope="col"${j===hi?' class="hi"':''}>${c}</th>`).join('')+'</tr></thead><tbody>';
+  for(const r of rows)h+=`<tr${r.cls?` class="${r.cls}"`:''}><th scope="row"${r.color?` style="color:${r.color}"`:''}>${r.label}</th>`+r.cells.map((c,j)=>`<td class="${j===hi?'hi':''}${r.dim&&r.dim[j]?' dim':''}">${c}</td>`).join('')+'</tr>';
+  el.innerHTML=h+'</tbody></table>';}
+
+/* audio */
+let ctx=null,gainNode,analyser,cur=null;
+function audio(){
+  if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();analyser=ctx.createAnalyser();analyser.fftSize=2048;
+    gainNode=ctx.createGain();gainNode.gain.value=.9;gainNode.connect(analyser);analyser.connect(ctx.destination);}
+  if(ctx.state==='suspended')ctx.resume();return ctx;}
+function stop(){if(!cur)return;const c=cur;cur=null;try{c.src.stop()}catch(e){}c.opts.onEnd&&c.opts.onEnd();drawScopeStatic();}
+function play(L,R,opts={}){
+  stop();const c=audio(),buf=c.createBuffer(2,L.length,SR);
+  buf.copyToChannel(L,0);buf.copyToChannel(R||L,1);
+  const src=c.createBufferSource();src.buffer=buf;src.connect(gainNode);
+  const off=opts.offset||0;src.start(0,off);
+  const me={src,start:c.currentTime-off,opts};cur=me;
+  src.onended=()=>{if(cur===me){cur=null;opts.onEnd&&opts.onEnd();drawScopeStatic();}};
+  const tick=()=>{if(cur!==me)return;opts.onTick&&opts.onTick(c.currentTime-me.start);drawScopeLive();requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);}
+function norm(x,p=.7){let m=1e-9;for(const v of x)m=Math.max(m,Math.abs(v));const y=new Float32Array(x.length);for(let i=0;i<x.length;i++)y[i]=x[i]*p/m;return y;}
+function bindPlay(btn,make,opts={}){
+  btn.addEventListener('click',()=>{
+    if(btn.classList.contains('playing')){stop();return;}
+    const r=make(),[L,R]=Array.isArray(r)?r:[r,null];
+    btn.classList.add('playing');
+    play(L,R,{onTick:opts.onTick,onEnd:()=>{btn.classList.remove('playing');opts.onEnd&&opts.onEnd();}});});}
+
+/* canvas helpers */
+const views=[];
+function view(draw){views.push(draw);return draw;}
+function redrawAll(){for(const d of views)d();}
+function setup(cv){const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1,w=Math.max(1,Math.round(r.width)),h=Math.max(1,Math.round(r.height));
+  if(cv.width!==w*dpr||cv.height!==h*dpr){cv.width=w*dpr;cv.height=h*dpr;}
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);return {g,w,h,dpr};}
+function hover(cv,cb){const h=e=>{const r=cv.getBoundingClientRect();cb(clamp((e.clientX-r.left)/r.width,0,1),clamp((e.clientY-r.top)/r.height,0,1),e);};
+  cv.addEventListener('pointermove',h);cv.addEventListener('pointerdown',h);}
+function midline(g,x,y,w){g.strokeStyle=css('--rule');g.lineWidth=1;g.beginPath();g.moveTo(x,y+.5);g.lineTo(x+w,y+.5);g.stroke();}
+function vline(g,x,y0,y1,color){g.save();g.strokeStyle=color||css('--hb');g.lineWidth=1.5;g.beginPath();g.moveTo(Math.round(x)+.5,y0);g.lineTo(Math.round(x)+.5,y1);g.stroke();g.restore();}
+function wave(g,data,o){
+  const from=o.from||0,to=o.to??data.length,n=to-from,X=o.X||0,Y=o.Y||0,W=o.W,H=o.H,mid=Y+H/2,sc=H/2*(o.fit??.9)/(o.amp||1);
+  g.save();g.globalAlpha=o.alpha??1;g.strokeStyle=o.color;g.fillStyle=o.color;g.lineWidth=o.lw||1.6;g.lineJoin='round';
+  if(n>W*2){g.beginPath();for(let px=0;px<W;px++){const a=from+Math.floor(px*n/W),b=Math.max(a+1,from+Math.floor((px+1)*n/W));let lo=Infinity,hi=-Infinity;
+      for(let i=a;i<b;i++){const v=data[i]||0;if(v<lo)lo=v;if(v>hi)hi=v;}g.rect(X+px,mid-hi*sc,1,Math.max(1,(hi-lo)*sc));}g.fill();}
+  else{g.beginPath();for(let i=0;i<n;i++){const px=X+i*W/(n-1),py=mid-(data[from+i]||0)*sc;i?g.lineTo(px,py):g.moveTo(px,py);}g.stroke();
+    if(o.dots){g.fillStyle=o.dots;for(let i=0;i<n;i++){g.beginPath();g.arc(X+i*W/(n-1),mid-(data[from+i]||0)*sc,1.7,0,7);g.fill();}}}
+  g.restore();}
+function peak(x){let m=1e-9;for(const v of x)m=Math.max(m,Math.abs(v));return m;}
+function label(g,txt,x,y,color,align='left',size=11){g.fillStyle=color||css('--muted');g.font=`${size}px ${css('--mono')}`;g.textAlign=align;g.textBaseline='middle';g.fillText(txt,x,y);}
+
+/* colors for heat maps */
+const rgb=hex=>{hex=hex.replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');const n=parseInt(hex,16);return [n>>16&255,n>>8&255,n&255];};
+const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+function divColor(v,scale,pos,neg,bg){const t=clamp(v/scale,-1,1),c=t>=0?mix(bg,pos,Math.sqrt(t)):mix(bg,neg,Math.sqrt(-t));return `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;}
+function heatRow(g,data,o){const from=o.from||0,n=(o.to??data.length)-from,{X,Y,W,H,scale,pos,neg,bg}=o;
+  if(n<=W){const cw=W/n;for(let i=0;i<n;i++){g.fillStyle=divColor(data[from+i],scale,pos,neg,bg);g.fillRect(X+i*cw,Y,cw+.6,H);}}
+  else for(let px=0;px<W;px++){g.fillStyle=divColor(data[from+Math.floor((px+.5)*n/W)],scale,pos,neg,bg);g.fillRect(X+px,Y,1,H);}}
+
+/* spectrogram: a short-time Fourier transform, drawn as an image */
+function fftMag(input){const n=input.length,re=Float64Array.from(input),im=new Float64Array(n);
+  for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){const t=re[i];re[i]=re[j];re[j]=t;}}
+  for(let len=2;len<=n;len<<=1){const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang),half=len>>1;
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let k=0;k<half;k++){const a=i+k,b=a+half,tr=re[b]*cr-im[b]*ci,ti=re[b]*ci+im[b]*cr;
+      re[b]=re[a]-tr;im[b]=im[a]-ti;re[a]+=tr;im[a]+=ti;const nc=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=nc;}}}
+  const m=new Float32Array(n/2);for(let i=0;i<n/2;i++)m[i]=Math.hypot(re[i],im[i]);return m;}
+function stft(x,Nf=2048,hop=256){const win=new Float32Array(Nf);for(let i=0;i<Nf;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(Nf-1));
+  const frames=[],buf=new Float32Array(Nf);let mx=1e-12;
+  for(let s=0;s+Nf<=x.length;s+=hop){for(let i=0;i<Nf;i++)buf[i]=x[s+i]*win[i];const m=fftMag(buf);for(const v of m)if(v>mx)mx=v;frames.push(m);}
+  return {frames,mx,Nf,hop};}
+function drawSpectrogram(cv,sg,{fmax,color,dur,marks=[]}){
+  const {g,w,h,dpr}=setup(cv),L=42,B=18,pw=w-L-4,ph=h-B-4;
+  const bg=rgb(css('--surface')),mid=rgb(color),top=rgb(css('--ink'));
+  const iw=Math.max(1,Math.round(pw*dpr)),ih=Math.max(1,Math.round(ph*dpr)),img=g.createImageData(iw,ih),binHz=SR/sg.Nf;
+  for(let px=0;px<iw;px++){const fr=sg.frames[Math.min(sg.frames.length-1,Math.floor(px/iw*sg.frames.length))];
+    for(let py=0;py<ih;py++){const hz=(1-py/ih)*fmax,bin=Math.min(fr.length-1,Math.round(hz/binHz));
+      const db=20*Math.log10(fr[bin]/sg.mx+1e-12),t=clamp((db+60)/60,0,1);
+      const c=t<.75?mix(bg,mid,t/.75):mix(mid,top,(t-.75)/.25),k=(py*iw+px)*4;img.data[k]=c[0];img.data[k+1]=c[1];img.data[k+2]=c[2];img.data[k+3]=255;}}
+  g.save();g.setTransform(1,0,0,1,0,0);g.putImageData(img,Math.round(L*dpr),Math.round(4*dpr));g.restore();
+  const Y=hz=>4+ph*(1-hz/fmax);
+  const step=fmax>3000?1000:500;
+  for(let hz=0;hz<=fmax;hz+=step)label(g,hz>=1000?(hz/1000)+'k':String(hz),L-6,clamp(Y(hz),8,h-B-2),null,'right',10);
+  label(g,'Hz',4,8,null,'left',10);
+  for(let s=0;s<=dur+1e-9;s+=.5)label(g,s.toFixed(1)+' s',clamp(L+s/dur*pw,L+14,w-16),h-8,null,'center',10);
+  for(const [hz,txt] of marks)if(hz<fmax)label(g,txt,w-8,Y(hz),css('--ink'),'right',10);}
+
+/* hero scope */
+const scopeCv=$('scope');
+let heroStatic=null;
+function heroData(){if(heroStatic)return heroStatic;const n=Math.floor(.03*SR);
+  heroStatic=[['--bass',S.bass(33,.05)],['--pad',S.pad([62],.7,.12).slice(Math.floor(.62*SR),Math.floor(.62*SR)+n)],['--pluck',S.pluck(45,.05)],['--glock',S.glock(69,.05)]]
+    .map(([c,x])=>[c,x.slice(0,n)]);return heroStatic;}
+const drawScopeStatic=view(()=>{if(cur)return;const {g,w,h}=setup(scopeCv);midline(g,0,h/2,w);
+  heroData().forEach(([c,x],i)=>wave(g,x,{W:w,H:h,color:css(c),amp:peak(x),fit:.78-i*.1,lw:2.2,alpha:.9}));});
+let scopeBuf=null;
+function drawScopeLive(){if(!analyser)return;const {g,w,h}=setup(scopeCv);if(!scopeBuf)scopeBuf=new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(scopeBuf);midline(g,0,h/2,w);
+  let s=0;for(let i=1;i<scopeBuf.length/2;i++){if(scopeBuf[i-1]<0&&scopeBuf[i]>=0){s=i;break;}}
+  wave(g,scopeBuf,{from:s,to:s+1024,W:w,H:h,color:css('--hb'),amp:1,fit:1.6,lw:2.4});}
+
+/* 1 sine */
+const freq=$('freq');let hi1=12;
+function sine1(){const fr=+freq.value,n=Math.round(.005*SR),x=new Float32Array(n);for(let i=0;i<n;i++)x[i]=Math.sin(2*Math.PI*fr*i/SR);return x;}
+const draw1=view(()=>{const x=sine1(),n=x.length,fr=+freq.value;hi1=clamp(hi1,0,n-1);
+  {const {g,w,h}=setup($('c1'));const pad=22,H=h-pad;midline(g,0,H/2,w);
+    vline(g,hi1/(n-1)*w,4,H-4);
+    wave(g,x,{W:w,H,color:css('--ink'),lw:1.4,dots:css('--hb')});
+    g.fillStyle=css('--hb');g.beginPath();g.arc(hi1/(n-1)*w,H/2-x[hi1]*H/2*.9,5,0,7);g.fill();
+    for(let ms=0;ms<=5;ms++)label(g,ms+' ms',clamp(ms/5*w,14,w-14),h-8,null,'center');}
+  {const {g,w,h}=setup($('c1h'));heatRow(g,x,{X:0,Y:0,W:w,H:h,scale:1,pos:rgb(css('--hb')),neg:rgb(css('--neg')),bg:rgb(css('--surface'))});
+    g.strokeStyle=css('--ink');g.lineWidth=2;const cw=w/n;g.strokeRect(hi1*cw+1,1,Math.max(2,cw-2),h-2);}
+  $('freqOut').textContent=fr+' Hz';
+  $('r1').innerHTML=`one wiggle = <b>${(1000/fr).toFixed(2)} ms</b> = <b>${(SR/fr).toFixed(1)}</b> samples`;
+  $('s1').innerHTML=`<b>t.shape = x.shape = (${n},)</b> for these 5 ms &nbsp;·&nbsp; <b>(44100,)</b> for one second &nbsp;·&nbsp; every value in x lies between −1 and +1`;
+  const a=clamp(hi1-4,0,n-9),idx=[...Array(9)].map((_,k)=>a+k);
+  numTable($('t1'),{label:'i',cells:idx.map(String)},[
+    {label:'t = i / SR',cells:idx.map(i=>(i/SR).toFixed(6))},
+    {label:`x = sin(2π·${fr}·t)`,cells:idx.map(i=>sgn(x[i]))}],hi1-a);});
+freq.addEventListener('input',draw1);
+hover($('c1'),fx=>{hi1=Math.round(fx*(Math.round(.005*SR)-1));draw1();});
+hover($('c1h'),fx=>{const n=Math.round(.005*SR);hi1=Math.floor(fx*n);draw1();});
+bindPlay($('p1'),()=>{const fr=+freq.value,x=new Float32Array(SR);for(let i=0;i<SR;i++)x[i]=.3*Math.sin(2*Math.PI*fr*i/SR);return x;});
+
+/* 2 keyboard */
+let selNote=69;
+(function buildKeyboard(){const kb=$('kb'),lo=57,hi=81,blk=[1,3,6,8,10],whites=[];
+  for(let m=lo;m<=hi;m++)if(!blk.includes(m%12))whites.push(m);const W=100/whites.length;
+  for(let m=lo;m<=hi;m++){const b=document.createElement('button');const isB=blk.includes(m%12);b.className='key '+(isB?'b':'w');b.dataset.m=m;b.setAttribute('aria-label',noteName(m)+', '+f(m).toFixed(1)+' hertz');
+    if(isB){const wi=whites.filter(x=>x<m).length;b.style.left=(wi*W-W*.32)+'%';b.style.width=(W*.64)+'%';}
+    else{b.style.left=(whites.indexOf(m)*W)+'%';b.style.width=W+'%';if(m%12===0||m%12===9){const s=document.createElement('span');s.textContent=noteName(m);b.appendChild(s);}}
+    b.addEventListener('click',()=>{selNote=m;draw2();const n=SR,x=S.env(n,.005,.8);for(let i=0;i<n;i++)x[i]*=.35*Math.sin(2*Math.PI*f(m)*i/SR);play(x);});
+    kb.appendChild(b);}})();
+const draw2=view(()=>{document.querySelectorAll('.key').forEach(k=>k.classList.toggle('on',+k.dataset.m===selNote));
+  const {g,w,h}=setup($('c2'));const n=Math.round(.015*SR),a=new Float32Array(n),r=new Float32Array(n);
+  for(let i=0;i<n;i++){a[i]=Math.sin(2*Math.PI*f(selNote)*i/SR);r[i]=Math.sin(2*Math.PI*440*i/SR);}
+  midline(g,0,h/2,w);wave(g,r,{W:w,H:h,color:css('--muted'),alpha:.4,lw:1.2});wave(g,a,{W:w,H:h,color:css('--hb'),lw:1.8});
+  const fr=f(selNote);$('r2').innerHTML=`<b>${noteName(selNote)}</b> · MIDI ${selNote} · <b>${fr.toFixed(2)} Hz</b> · ${(fr/440).toFixed(4)}× A 440 · 15 ms shown`;
+  const s=clamp(selNote-4,57,73),ms=[...Array(9)].map((_,k)=>s+k);
+  numTable($('t2'),{label:'name',cells:ms.map(noteName)},[
+    {label:'note',cells:ms.map(String)},
+    {label:'(note − 69) / 12',cells:ms.map(m=>sgn((m-69)/12,3))},
+    {label:'2 ** that',cells:ms.map(m=>Math.pow(2,(m-69)/12).toFixed(4))},
+    {label:'× 440 = Hz',cells:ms.map(m=>f(m).toFixed(2)),cls:'total'}],selNote-s);});
+
+
+/* 3 first tune: Happy Birthday in plain beeps */
+const beatHB=60/96,TUNE_T=S.HB.reduce((a,[,d])=>a+d,0)*beatHB;
+const tuneStarts=[];{let t=0;for(const [,d] of S.HB){tuneStarts.push(t);t+=d*beatHB;}}
+function beepSong(){const parts=S.HB.map(([m,d])=>{const n=Math.floor(d*beatHB*SR),x=new Float32Array(n);for(let i=0;i<n;i++)x[i]=.3*Math.sin(2*Math.PI*f(m)*i/SR);return x;});
+  const tot=parts.reduce((a,p)=>a+p.length,0),out=new Float32Array(tot);let o=0;for(const p of parts){out.set(p,o);o+=p.length;}return out;}
+let tuneSel=0,tunePH=null;
+const noteAt=t=>{let k=0;for(let i=0;i<tuneStarts.length;i++)if(t>=tuneStarts[i])k=i;return k;};
+const drawTune=view(()=>{const {g,w,h}=setup($('cT')),L=40,pw=w-L-6,top=10,bot=h-24,lo=68,hi=82,Y=m=>bot-(m-lo)/(hi-lo)*(bot-top),X=t=>L+t/TUNE_T*pw;
+  for(const m of [69,71,73,74,76,78,79,81]){g.strokeStyle=css('--rule');g.lineWidth=1;g.beginPath();g.moveTo(L,Math.round(Y(m))+.5);g.lineTo(w,Math.round(Y(m))+.5);g.stroke();label(g,noteName(m),L-6,Y(m),null,'right',10);}
+  S.HB.forEach(([m,d],k)=>{const x=X(tuneStarts[k]),ww=Math.max(3,d*beatHB/TUNE_T*pw-2);g.fillStyle=css('--hb');g.globalAlpha=k===tuneSel?1:.55;g.fillRect(x,Y(m)-4,ww,8);g.globalAlpha=1;
+    if(k===tuneSel){g.strokeStyle=css('--ink');g.lineWidth=2;g.strokeRect(x-2,Y(m)-6,ww+4,12);}});
+  for(let s=0;s<=TUNE_T;s+=5)label(g,s+' s',clamp(X(s),L+8,w-12),h-9,null,'center');
+  if(tunePH!=null)vline(g,X(tunePH),top-4,bot+6,css('--ink'));
+  const lens=S.HB.map(([,d])=>Math.floor(d*beatHB*SR)),tot=lens.reduce((a,b)=>a+b,0);
+  $('sT').innerHTML=`<b>25 arrays</b> joined end to end → <b>song.shape = (${int(tot)},)</b> &nbsp;·&nbsp; ${(tot/SR).toFixed(2)} s at 96 beats a minute`;
+  const a=clamp(tuneSel-3,0,S.HB.length-8),idx=[...Array(8)].map((_,k)=>a+k);
+  numTable($('tT'),{label:'position in the list',cells:idx.map(String)},[
+    {label:'note',cells:idx.map(k=>String(S.HB[k][0]))},
+    {label:'name',cells:idx.map(k=>noteName(S.HB[k][0]))},
+    {label:'hz(note)',cells:idx.map(k=>f(S.HB[k][0]).toFixed(2))},
+    {label:'beats',cells:idx.map(k=>String(S.HB[k][1]))},
+    {label:'seconds = beats × beat',cells:idx.map(k=>(S.HB[k][1]*beatHB).toFixed(3))},
+    {label:'beep(...).shape',cells:idx.map(k=>'('+int(lens[k])+',)'),cls:'total'}],tuneSel-a);});
+hover($('cT'),fx=>{if(tunePH!=null)return;const r=$('cT').getBoundingClientRect(),t=(fx*r.width-40)/(r.width-46)*TUNE_T;tuneSel=noteAt(clamp(t,0,TUNE_T));drawTune();});
+bindPlay($('pT'),beepSong,{onTick:t=>{tunePH=Math.min(t,TUNE_T);tuneSel=noteAt(tunePH);drawTune();},onEnd:()=>{tunePH=null;drawTune();}});
+
+/* 4 envelope */
+const att=$('att'),dec=$('dec');let hi3=.25;
+function envNote(raw){const n=Math.floor(1.5*SR),fr=220,x=new Float32Array(n),e=raw?null:S.env(n,+att.value/1000,+dec.value);
+  for(let i=0;i<n;i++)x[i]=.4*Math.sin(2*Math.PI*fr*i/SR)*(raw?1:e[i]);return x;}
+const draw3=view(()=>{const {g,w,h}=setup($('c3'));const pad=20,H=h-pad;
+  const raw=envNote(true),sh=envNote(false),e=S.env(raw.length,+att.value/1000,+dec.value);
+  midline(g,0,H/2,w);wave(g,raw,{W:w,H,color:css('--muted'),alpha:.18,amp:.4});wave(g,sh,{W:w,H,color:css('--ink'),amp:.4});
+  g.save();g.setLineDash([5,4]);g.strokeStyle=css('--hb');g.lineWidth=2;g.beginPath();
+  for(let px=0;px<w;px++){const v=e[Math.floor(px/w*e.length)];const y=H/2-v*H/2*.9;px?g.lineTo(px,y):g.moveTo(px,y);}g.stroke();g.restore();
+  vline(g,hi3/1.5*w,4,H-4);
+  for(let s=0;s<=1.5;s+=.5)label(g,s.toFixed(1)+' s',clamp(s/1.5*w,16,w-16),h-7,null,'center');
+  $('attOut').textContent=att.value+' ms';$('decOut').textContent=(+dec.value).toFixed(2)+' s';
+  const n=raw.length;
+  $('s3').innerHTML=`<b>sine (${int(n)},)</b> × <b>env (${int(n)},)</b> → <b>(${int(n)},)</b> &nbsp;·&nbsp; 1.5 s, multiplied sample by sample`;
+  const hiI=clamp(Math.round(hi3*SR),0,n-1);
+  let idx=[0,Math.round(.001*SR),Math.round(.003*SR),Math.round(.25*SR),Math.round(.5*SR),Math.round(1*SR),n-1].filter(i=>i!==hiI);idx.push(hiI);idx.sort((a,b)=>a-b);
+  const raw1=i=>.4*Math.sin(2*Math.PI*220*i/SR);
+  numTable($('t3'),{label:'t (seconds)',cells:idx.map(i=>(i/SR).toFixed(4))},[
+    {label:'sine',cells:idx.map(i=>sgn(raw1(i)))},
+    {label:'env',cells:idx.map(i=>e[i].toFixed(4))},
+    {label:'sine × env',cells:idx.map(i=>sgn(raw1(i)*e[i])),cls:'total'}],idx.indexOf(hiI));});
+att.addEventListener('input',draw3);dec.addEventListener('input',draw3);
+hover($('c3'),fx=>{hi3=fx*1.5;draw3();});
+bindPlay($('p3raw'),()=>envNote(true));bindPlay($('p3env'),()=>envNote(false));
+
+/* 4 pluck */
+const harm=$('harm'),bright=$('bright');let pluckCache=null,hi4=40,sg4=null;
+function pluckNote(){const k=harm.value+'|'+bright.value;if(!pluckCache||pluckCache.k!==k){pluckCache={k,x:S.pluck(57,1.6,.5,+bright.value,+harm.value)};sg4=null;}return pluckCache.x;}
+function pluckMatrix(){const H=+harm.value,B=+bright.value,fr=f(57),n=Math.round(2/fr*SR),rows=[],sum=new Float32Array(n);
+  for(let h=1;h<=8;h++){const p=new Float32Array(n);if(h<=H){const amp=Math.pow(B,h)/Math.pow(h,1.1);
+      for(let i=0;i<n;i++){const t=i/SR;p[i]=amp*Math.sin(2*Math.PI*fr*h*t)*Math.exp(-t*(2.5+1.6*h));sum[i]+=p[i];}}rows.push(p);}
+  return {rows,sum,n,H};}
+const draw4=view(()=>{const H=+harm.value,B=+bright.value,col=css('--pluck'),amps=[];for(let h=1;h<=8;h++)amps.push(Math.pow(B,h)/Math.pow(h,1.1));
+  const M=pluckMatrix();hi4=clamp(hi4,0,M.n-1);
+  {const {g,w,h}=setup($('c4spec'));const bw=w/8,top=8,bot=h-22,amx=Math.max(...amps);
+    for(let i=0;i<8;i++){const on=i<H,bh=(bot-top)*amps[i]/amx,x=i*bw+bw*.22;
+      g.fillStyle=col;g.strokeStyle=on?col:css('--rule');g.lineWidth=1.5;g.beginPath();g.rect(x,bot-bh,bw*.56,bh);on?g.fill():g.stroke();
+      label(g,(i+1)+'×',i*bw+bw/2,h-8,on?css('--ink'):css('--muted'),'center');}}
+  {const {g,w,h}=setup($('c4zoom'));const a=peak(M.sum);midline(g,0,h/2,w);
+    M.rows.slice(0,H).forEach(p=>wave(g,p,{W:w,H:h,color:col,amp:a,lw:1,alpha:.35}));wave(g,M.sum,{W:w,H:h,color:col,amp:a,lw:2.4});
+    vline(g,hi4/(M.n-1)*w,4,h-4,css('--ink'));}
+  {const {g,w,h}=setup($('c4full'));const x=pluckNote();midline(g,0,h/2,w);wave(g,x,{W:w,H:h,color:col,amp:peak(x)});}
+  $('harmOut').textContent=H;$('brightOut').textContent=B.toFixed(2);
+  drawMatrix4(M);});
+const draw4sg=view(()=>{const H=+harm.value,sg=sg4||(sg4=stft(pluckNote()));
+  drawSpectrogram($('c4sg'),sg,{fmax:2000,color:css('--pluck'),dur:1.6,marks:[...Array(H)].map((_,k)=>[220*(k+1),(k+1)+'×'])});
+  $('s4sg').innerHTML=`<b>${sg.frames.length} slices × ${sg.Nf/2} frequencies</b> &nbsp;·&nbsp; each slice is ${sg.Nf} samples (${(sg.Nf/SR*1000).toFixed(0)} ms), one every ${sg.hop} samples`;});
+function drawMatrix4(M){const cv=$('c4mat'),{g,w,h}=setup(cv),L=56,gap=10,rowH=(h-gap-22)/9,pw=w-L,bg=rgb(css('--surface')),pos=rgb(css('--pluck')),neg=rgb(css('--neg'));
+  const sc=peak(M.sum);
+  M.rows.forEach((p,k)=>{heatRow(g,p,{X:L,Y:k*rowH,W:pw,H:rowH-1,scale:sc,pos,neg,bg});label(g,'h='+(k+1),4,k*rowH+rowH/2,k<M.H?css('--ink'):css('--muted'));});
+  const ys=8*rowH+gap;heatRow(g,M.sum,{X:L,Y:ys,W:pw,H:rowH,scale:sc,pos,neg,bg});label(g,'sum',4,ys+rowH/2,css('--ink'),'left',12);
+  g.fillStyle=css('--ink');g.fillRect(L,ys-gap/2-1,pw,2);
+  const x=L+(hi4+.5)/M.n*pw;g.strokeStyle=css('--ink');g.lineWidth=2;g.strokeRect(Math.round(x)-3,0,6,ys+rowH);
+  for(const [i,txt] of [[0,'sample 0'],[M.n-1,'sample '+(M.n-1)]])label(g,txt,L+(i+.5)/M.n*pw,h-8,null,i?'right':'left',10);
+  $('s4').innerHTML=`<b>X.shape = (8, ${M.n})</b> → <b>X.sum(axis=0).shape = (${M.n},)</b> &nbsp;·&nbsp; ${M.n} samples = two wiggles of 220 Hz (fade included, before volume and envelope)`;
+  const a=clamp(hi4-3,0,M.n-7),idx=[...Array(7)].map((_,k)=>a+k);
+  numTable($('t4'),{label:'sample i',cells:idx.map(String)},[
+    ...M.rows.map((p,k)=>({label:`h=${k+1} · ${220*(k+1)} Hz`,color:k<M.H?null:css('--muted'),cells:idx.map(i=>sgn(p[i])),dim:idx.map(()=>k>=M.H)})),
+    {label:'sum (column total)',cells:idx.map(i=>sgn(M.sum[i])),cls:'total'}],hi4-a);}
+const upd4=()=>{draw4();draw4sg();};harm.addEventListener('input',upd4);bright.addEventListener('input',upd4);
+hover($('c4zoom'),fx=>{hi4=Math.round(fx*(pluckMatrix().n-1));draw4();});
+hover($('c4mat'),fx=>{const n=Math.round(2/f(57)*SR),w=$('c4mat').getBoundingClientRect().width,L=56;hi4=clamp(Math.floor((fx*w-L)/(w-L)*n),0,n-1);draw4();});
+bindPlay($('p4'),()=>norm(pluckNote()));
+
+/* 5 glock */
+let sg5=null;
+const draw5=view(()=>{
+  {const {g,w,h}=setup($('c5ratio'));const L=60,R=12,pw=w-L-R,X=r=>L+r/9*pw,rowH=(h-24)/2;
+    g.strokeStyle=css('--rule');g.lineWidth=1;for(let r=0;r<=9;r++){g.beginPath();g.moveTo(X(r)+.5,6);g.lineTo(X(r)+.5,h-22);g.stroke();label(g,r+'×',X(r),h-9,null,'center');}
+    const rows=[['pluck',css('--pluck'),[1,2,3,4,5,6,7,8].map(k=>[k,1/Math.pow(k,1.1)])],['bell',css('--glock'),[[1,1],[2.76,.35],[5.4,.15]]]];
+    rows.forEach(([name,c,parts],ri)=>{const base=6+rowH*(ri+1)-6;label(g,name,4,base-rowH/3,c);
+      parts.forEach(([r,a])=>{const bh=(rowH-14)*a;g.fillStyle=c;g.fillRect(X(r)-2,base-bh,4,bh);
+        if(ri===1&&r!==1)label(g,r+'×',X(r)+6,base-bh+6,c);});});}
+  const n=Math.round(.01*SR);
+  {const {g,w,h}=setup($('c5a'));const x=S.pluck(81,.02).slice(0,n);midline(g,0,h/2,w);wave(g,x,{W:w,H:h,color:css('--pluck'),amp:peak(x),lw:1.4});}
+  {const {g,w,h}=setup($('c5b'));const x=S.glock(81,.02).slice(0,n);midline(g,0,h/2,w);wave(g,x,{W:w,H:h,color:css('--glock'),amp:peak(x),lw:1.4});}
+  if(!sg5)sg5=[stft(S.pluck(81,1.6)),stft(S.glock(81,1.6))];
+  drawSpectrogram($('c5sa'),sg5[0],{fmax:5500,color:css('--pluck'),dur:1.6,marks:[1,2,3,4,5,6].map(k=>[880*k,k+'×'])});
+  drawSpectrogram($('c5sb'),sg5[1],{fmax:5500,color:css('--glock'),dur:1.6,marks:[[880,'1×'],[880*2.76,'2.76×'],[880*5.4,'5.4×']]});});
+bindPlay($('p5a'),()=>norm(S.pluck(81,1.6),.6));bindPlay($('p5b'),()=>norm(S.glock(81,1.6),.6));
+
+/* 6 pad */
+const det=$('det');
+const draw6=view(()=>{const d=+det.value,{g,w,h}=setup($('c6')),x=S.pad([62],3,.12,d);
+  const pad=20;midline(g,0,(h-pad)/2,w);wave(g,x,{W:w,H:h-pad,color:css('--pad'),amp:.12*3*1.3});
+  for(let s=0;s<=3;s++)label(g,s+' s',clamp(s/3*w,12,w-12),h-7,null,'center');
+  $('detOut').textContent=d.toFixed(2);const beat=f(62+d)-f(62);
+  $('r6').innerHTML=d>0?`note 62 = 293.66 Hz, +${d.toFixed(2)} semitone = ${f(62+d).toFixed(2)} Hz → pulses <b>${beat.toFixed(2)}×</b> per second`:'all three copies identical: <b>no beating</b>';
+  $('s6').innerHTML=`3 notes × 3 copies = <b>9 sine waves</b> (plus 9 more at double frequency), all added into one array of shape <b>(${int(Math.floor(3.5*SR))},)</b> for 3.5 s`;
+  const ms=[62,66,69];
+  numTable($('t6'),{label:'note',cells:[`note − ${d.toFixed(2)}`,'in tune',`note + ${d.toFixed(2)}`,'pulses / second']},
+    ms.map(m=>({label:`${noteName(m)} · ${m}`,cells:[f(m-d).toFixed(2)+' Hz',f(m).toFixed(2)+' Hz',f(m+d).toFixed(2)+' Hz',(f(m+d)-f(m)).toFixed(2)]})),1);});
+det.addEventListener('input',draw6);
+bindPlay($('p6'),()=>norm(S.pad([62,66,69],3.5,.12,+det.value)));
+
+/* 7 rhythm */
+const drumDefs=[['d1','pd1','--bass',()=>S.bass(38,.48),'bass(38, .48)'],['d2','pd2','--drums',()=>S.kick(),'kick()'],['d3','pd3','--drums',()=>S.snare(),'snare()'],['d4','pd4','--drums',()=>S.hat(),'hat()']];
+const drumData={};
+const draw7=view(()=>drumDefs.forEach(([cid,,c,mk])=>{const x=drumData[cid]||(drumData[cid]=mk());const {g,w,h}=setup($(cid));midline(g,0,h/2,w);wave(g,x,{W:w,H:h,color:css(c),amp:peak(x),lw:1.2});
+  $('s'+cid).innerHTML=`<b>(${int(x.length)},)</b> ${(x.length/SR).toFixed(2)} s`;}));
+drumDefs.forEach(([cid,bid,,mk])=>bindPlay($(bid),()=>{const x=mk(),y=new Float32Array(Math.max(x.length,SR/2));y.set(x);return norm(y,.6);}));
+bindPlay($('pGroove'),()=>{const b=60/112,tr=new S.Track(8*b+1);S.playBar(tr,4,0,b);S.playBar(tr,5,4*b,b);
+  const len=Math.floor((8*b+1.6)*SR);return S.master(tr.L,tr.R,len);});
+(function hatTable(){const n=Math.floor(.06*SR),raw=S.normal(n),flt=S.biquad(raw,'high',7000),idx=[...Array(10)].map((_,i)=>i);
+  numTable($('t7'),{label:'sample i',cells:idx.map(String)},[
+    {label:'rng.standard_normal(n)',cells:idx.map(i=>sgn(raw[i],3))},
+    {label:'after 7 kHz high-pass',cells:idx.map(i=>sgn(flt[i],3))},
+    {label:'× 0.12 × exp(−70 t)',cells:idx.map(i=>sgn(flt[i]*.12*Math.exp(-i/SR*70),3)),cls:'total'}]);})();
+
+/* 8 reverb */
+const wet=$('wet');let ir=null;
+const draw8=view(()=>{const {g,w,h}=setup($('c8'));const n=Math.floor(1.5*SR);
+  if(!ir){const x=new Float32Array(n);x[0]=1;ir=S.reverb(x,1);}
+  const pad=20;midline(g,0,(h-pad)/2,w);wave(g,ir,{W:w,H:h-pad,color:css('--ink'),amp:.45,fit:.95,lw:1});
+  for(let s=0;s<=1.5;s+=.5)label(g,s.toFixed(1)+' s',clamp(s/1.5*w,16,w-16),h-7,null,'center');
+  $('wetOut').textContent=(+wet.value).toFixed(2);
+  $('s8').innerHTML=`input <b>x = [1, 0, 0, …]</b> shape <b>(${int(n)},)</b> → output the same shape, mostly small echoes`;
+  const lim=Math.floor(.1*SR),pk=[];
+  for(let i=2;i<lim;i++){const a=Math.abs(ir[i]);if(a>Math.abs(ir[i-1])&&a>=Math.abs(ir[i+1])&&a>.01)pk.push(i);}
+  pk.sort((a,b)=>Math.abs(ir[b])-Math.abs(ir[a]));const top=[0,...pk.slice(0,7)].sort((a,b)=>a-b);
+  numTable($('t8'),{label:'sample i',cells:top.map(int)},[
+    {label:'time',cells:top.map(i=>(i/SR*1000).toFixed(1)+' ms')},
+    {label:'y[i]',cells:top.map(i=>sgn(ir[i],3)),cls:'total'}],0);});
+wet.addEventListener('input',draw8);
+function glockRoom(w){const n=Math.floor(2.6*SR),x=new Float32Array(n);x.set(S.glock(74,1.5));return norm(w?S.reverb(x,w):x,.6);}
+bindPlay($('p8dry'),()=>glockRoom(0));bindPlay($('p8wet'),()=>glockRoom(+wet.value));
+
+/* 9 timeline */
+const plan=S.sunny(SONG_SECS,HB_AT,true);
+const SONG_LEN=Math.max(SONG_SECS,plan.end+2.5);
+let song=null,songPromise=null,playhead=null,tlCache=null,tlHover=null,tlHoverT=HB_AT;
+const LANES=[{id:'mel',label:'bell',c:'--glock',lo:67,hi:85},{id:'chord',label:'pluck',c:'--pluck',lo:36,hi:85},{id:'pad',label:'pad',c:'--pad',lo:60,hi:71},{id:'bass',label:'bass',c:'--bass',lo:28,hi:47},{id:'drums',label:'drums',c:'--drums'}];
+function tlGeom(w,h){const lw=w<560?44:60,top=26,waveH=58,axis=20,laneH=(h-top-waveH-axis-8)/LANES.length;
+  return {lw,top,waveH,axis,laneH,pw:w-lw-6,X:t=>lw+t/SONG_LEN*(w-lw-6),waveTop:top+laneH*LANES.length+6};}
+function evPos(e,G){const i=LANES.findIndex(L=>L.id===e.lane),L=LANES[i],y0=G.top+i*G.laneH;
+  if(e.lane==='drums')return {x:G.X(e.t),y:y0+G.laneH*(.25+.25*e.k),w:3};
+  const m=e.ms?e.ms[1]:e.m;return {x:G.X(e.t),y:y0+4+(G.laneH-8)*(1-(m-L.lo)/(L.hi-L.lo)),w:Math.max(2,G.X(e.t+e.d)-G.X(e.t)-1)};}
+function buildTimeline(){const cv=$('timeline'),r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1,w=Math.round(r.width),h=Math.round(r.height);
+  const off=document.createElement('canvas');off.width=w*dpr;off.height=h*dpr;const g=off.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
+  const G=tlGeom(w,h),b=plan.b;
+  const secs=w<700?[[0,'band'],[plan.hbStart,'Happy Birthday']]:[[0,'pluck'],[4*b,'+ bass, drums'],[plan.hbStart,'Happy Birthday']];
+  g.fillStyle=css('--hb');g.globalAlpha=.08;g.fillRect(G.X(plan.hbStart),G.top-4,G.X(plan.end+1)-G.X(plan.hbStart),G.laneH*LANES.length+G.waveH+10);g.globalAlpha=1;
+  secs.forEach(([t,name],i)=>{const x=G.X(t);g.strokeStyle=css('--rule');g.setLineDash([3,3]);g.beginPath();g.moveTo(x+.5,G.top-6);g.lineTo(x+.5,h-G.axis);g.stroke();g.setLineDash([]);
+    label(g,name,x+5,10,i===secs.length-1?css('--hb'):css('--muted'));});
+  LANES.forEach((L,i)=>{const y0=G.top+i*G.laneH;g.strokeStyle=css('--rule');g.beginPath();g.moveTo(G.lw,y0+G.laneH+.5);g.lineTo(w,y0+G.laneH+.5);g.stroke();
+    label(g,L.label,4,y0+G.laneH/2,css(L.c));});
+  const col={};LANES.forEach(L=>col[L.id]=css(L.c));
+  for(const e of plan.tr.events){const i=LANES.findIndex(L=>L.id===e.lane),L=LANES[i],y0=G.top+i*G.laneH,x=G.X(e.t);g.fillStyle=col[e.lane];
+    if(e.lane==='drums'){const y=y0+G.laneH*(.25+.25*e.k),rr=e.k===2?1.1:1.9;g.beginPath();g.arc(x,y,rr,0,7);g.fill();continue;}
+    const ms=e.ms||[e.m],ww=Math.max(2,G.X(e.t+e.d)-x-1);
+    for(const m of ms){const y=y0+4+(G.laneH-8)*(1-(m-L.lo)/(L.hi-L.lo));g.fillRect(x,y-1.5,ww,3);}}
+  const wy=G.waveTop;
+  if(song){const mono=new Float32Array(song.L.length);for(let i=0;i<mono.length;i++)mono[i]=(song.L[i]+song.R[i])/2;
+    wave(g,mono,{X:G.lw,Y:wy,W:Math.round(G.X(mono.length/SR)-G.lw),H:G.waveH,color:css('--muted'),amp:.8,fit:.95});}
+  else label(g,'computing the audio…',G.lw+6,wy+G.waveH/2);
+  label(g,'wave',4,wy+G.waveH/2);
+  for(let t=0;t<=SONG_LEN;t+=5)label(g,t+' s',Math.min(w-14,G.X(t)),h-9,null,t?'center':'left');
+  tlCache={off,w,h,G};}
+const drawTimeline=view(()=>{tlCache=null;drawTL();});
+function drawTL(){if(!tlCache)buildTimeline();const cv=$('timeline'),{off,w,h,G}=tlCache,dpr=window.devicePixelRatio||1;
+  if(cv.width!==w*dpr||cv.height!==h*dpr){cv.width=w*dpr;cv.height=h*dpr;}
+  const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);g.drawImage(off,0,0);g.setTransform(dpr,0,0,dpr,0,0);
+  if(tlHover){const p=evPos(tlHover,G);g.strokeStyle=css('--ink');g.lineWidth=2;g.strokeRect(p.x-3,p.y-5,p.w+6,10);}
+  const t=playhead!=null?playhead:tlHoverT;
+  if(t!=null){const x=G.X(t);g.strokeStyle=css('--hb');g.lineWidth=playhead!=null?2:1;g.beginPath();g.moveTo(x,G.top-6);g.lineTo(x,h-G.axis);g.stroke();
+    label(g,t.toFixed(2)+' s',Math.min(x+6,w-48),h-G.axis-8,css('--hb'));}
+  numbersAt(t);}
+function numbersAt(t){
+  const len=song?song.L.length:Math.floor(SONG_LEN*SR);
+  $('s9').innerHTML=`<b>x.shape = (${int(len)}, 2)</b> &nbsp;·&nbsp; one row per sample, one column per speaker &nbsp;·&nbsp; ${(len/SR).toFixed(0)} s × 44,100 rows`;
+  const i0=clamp(Math.floor((t||0)*SR),0,len-6),rows=[...Array(6)].map((_,k)=>i0+k);
+  const head={label:'row (sample)',cells:['time','left','right','int16 left','int16 right']};
+  const tb=$('t9');
+  if(!song){numTable(tb,head,rows.map(i=>({label:int(i),cells:[(i/SR).toFixed(5)+' s','…','…','…','…']})));return;}
+  numTable(tb,head,rows.map(i=>({label:int(i),cells:[(i/SR).toFixed(5)+' s',sgn(song.L[i]),sgn(song.R[i]),String(Math.trunc(song.L[i]*32767)),String(Math.trunc(song.R[i]*32767))]})));}
+function findEvent(fx,fy){if(!tlCache)return null;const {w,h,G}=tlCache,x=fx*w,y=fy*h,li=Math.floor((y-G.top)/G.laneH);
+  if(li<0||li>=LANES.length)return null;let best=null,bd=1e9;
+  for(const e of plan.tr.events){if(e.lane!==LANES[li].id)continue;const p=evPos(e,G);
+    const dx=x<p.x?p.x-x:x>p.x+p.w?x-p.x-p.w:0,d=dx*3+Math.abs(y-p.y);if(d<bd){bd=d;best=e;}}
+  return bd<30?best:null;}
+function describe(e){if(!e)return 'Point at any note to see the exact call that made it and where its numbers were added.';
+  const i=Math.floor(e.t*SR),gl=Math.sqrt(1-e.pan),gr=Math.sqrt(1+e.pan);
+  return `<code>${e.call}</code> at <b>${e.t.toFixed(3)} s</b> → an array of shape <b>(${int(e.n)},)</b><br>`+
+    `added into <b>left[${int(i)} : ${int(i+e.n)}]</b> × ${gl.toFixed(3)} and <b>right[${int(i)} : ${int(i+e.n)}]</b> × ${gr.toFixed(3)} &nbsp;(pan ${e.pan})`;}
+hover($('timeline'),(fx,fy)=>{tlHover=findEvent(fx,fy);$('tlInfo').innerHTML=describe(tlHover);
+  if(tlCache){const G=tlCache.G;tlHoverT=clamp((fx*tlCache.w-G.lw)/G.pw*SONG_LEN,0,SONG_LEN);}
+  drawTL();});
+
+function getSong(){if(song)return Promise.resolve(song);if(songPromise)return songPromise;
+  songPromise=new Promise(res=>{const done=d=>{song=d;tlCache=null;drawTL();res(song);};
+    try{const src=`const S=(${synthLib.toString()})();onmessage=e=>{const r=S.renderSong(e.data[0],e.data[1]);postMessage(r,[r.L.buffer,r.R.buffer]);};`;
+      const wk=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})));
+      wk.onmessage=e=>{done(e.data);wk.terminate();};
+      wk.onerror=()=>{wk.terminate();setTimeout(()=>done(S.renderSong(SONG_SECS,HB_AT)),30);};
+      wk.postMessage([SONG_SECS,HB_AT]);}
+    catch(err){setTimeout(()=>done(S.renderSong(SONG_SECS,HB_AT)),30);}});
+  return songPromise;}
+const songBtns=[$('playSong'),$('playSong2')],status=$('songStatus');
+function playSong(btn,offset=0){
+  audio();if(!song)status.textContent='computing 25 seconds of audio…';
+  getSong().then(s=>{songBtns.forEach(b=>b.classList.remove('playing'));btn.classList.add('playing');status.textContent='playing';
+    play(s.L,s.R,{offset,onTick:t=>{playhead=t;drawTL();status.textContent=`playing · ${t.toFixed(1)} s / ${(s.L.length/SR).toFixed(0)} s`;},
+      onEnd:()=>{btn.classList.remove('playing');playhead=null;drawTL();status.textContent='25 seconds, computed in your browser from the same math';}});});}
+songBtns.forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('playing')){stop();return;}playSong(b,0);}));
+$('timeline').addEventListener('click',e=>{if(!tlCache)return;const r=e.currentTarget.getBoundingClientRect(),G=tlCache.G;
+  const t=clamp((e.clientX-r.left-G.lw)/G.pw*SONG_LEN,0,SONG_LEN-1);playSong($('playSong2'),t);});
+
+/* 10 tanh */
+const draw10=view(()=>{const {g,w,h}=setup($('c10'));const P=28,s=Math.min(w,h)-P*2,ox=(w-s)/2,oy=(h-s)/2,X=u=>ox+(u+1)/2*s,Y=v=>oy+(1-(v+1)/2)*s;
+  g.strokeStyle=css('--rule');g.lineWidth=1;g.strokeRect(ox+.5,oy+.5,s,s);
+  g.beginPath();g.moveTo(X(-1),Y(0));g.lineTo(X(1),Y(0));g.moveTo(X(0),Y(-1));g.lineTo(X(0),Y(1));g.stroke();
+  g.save();g.setLineDash([5,4]);g.strokeStyle=css('--muted');g.beginPath();g.moveTo(X(-1),Y(-1));g.lineTo(X(1),Y(1));g.stroke();g.restore();
+  g.strokeStyle=css('--hb');g.lineWidth=2.6;g.beginPath();for(let i=0;i<=200;i++){const u=-1+i/100;const v=Math.tanh(1.3*u)*.8;i?g.lineTo(X(u),Y(v)):g.moveTo(X(u),Y(v));}g.stroke();
+  label(g,'input',X(1),Y(0)+12,null,'right');label(g,'output',X(0)+6,oy+10);
+  label(g,'0.69',X(1)-4,Y(.69)+14,css('--hb'),'right');label(g,'no change',X(.55)-6,Y(.62),null,'right');
+  label(g,'−1',X(-1),oy+s+12,null,'center');label(g,'1',X(1),oy+s+12,null,'center');});
+(function t10(){const us=[-1,-.5,-.1,0,.1,.5,1];
+  numTable($('t10'),{label:'x / max',cells:us.map(u=>sgn(u,2))},[
+    {label:'tanh(1.3 x) × 0.8',cells:us.map(u=>sgn(Math.tanh(1.3*u)*.8,4))},
+    {label:'× 32767',cells:us.map(u=>sgn(Math.tanh(1.3*u)*.8*32767,1))},
+    {label:'.astype(np.int16)',cells:us.map(u=>String(Math.trunc(Math.tanh(1.3*u)*.8*32767))),cls:'total'}]);})();
+
+
+/* copy the whole program */
+$('copyAll').addEventListener('click',async()=>{const b=$('copyAll'),code=$('fullCode');let msg='Copied';
+  try{await navigator.clipboard.writeText(code.textContent);}
+  catch(e){$('fullWrap').open=true;const r=document.createRange();r.selectNodeContents(code);const s=getSelection();s.removeAllRanges();s.addRange(r);msg='Selected. Now press Ctrl+C or Cmd+C';}
+  b.textContent=msg;setTimeout(()=>{b.textContent='Copy the program';},2600);});
+
+/* redraw on resize and theme change */
+let rq=0;const again=()=>{cancelAnimationFrame(rq);rq=requestAnimationFrame(()=>{redrawAll();});};
+let lastW=window.innerWidth;
+window.addEventListener('resize',()=>{if(window.innerWidth!==lastW){lastW=window.innerWidth;again();}});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',again);
+new MutationObserver(again).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(again);
+redrawAll();
+setTimeout(getSong,400);
+</script>
+</body>
+</html>
